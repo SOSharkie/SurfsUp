@@ -4,9 +4,12 @@ Surfs Up web app project for CMPS 115 Fall 2018
 Project Members
 - Sean Odnert
 - Mark Hiserodt
+- Andrew Haukness
+- Daniel Aguiar
 
 Project Description
-Our project is a web app which will help groups of surfers or individual surfers plan their surf sessions according to availability, each surfer's skill level, the weather, and ocean data at each surf spot in Santa Cruz.
+
+-- Our project is a web app which will help groups of surfers or individual surfers plan their surf sessions according to availability, each surfer's skill level, the weather, and ocean data at each surf spot in Santa Cruz.
 
 -- The first step is to allow users to create profiles and groups where they can then set their availability (based on work and school schedules) for when they can surf.
 
