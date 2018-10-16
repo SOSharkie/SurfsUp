@@ -1,0 +1,58 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var my_url = "{{=URL('api', 'my_method')}}";
+</script>
+{{end}}
+
+<div class="main_content">
+
+	<div id="vue-div" class="display:none">
+
+  	<div class="container padded">
+
+  		<!-- ************************************************ Menu ************************************************ -->
+  		<ul class="menu">
+  			<li>
+  				<button v-on:click="change_page('homepage')"> Homepage </button>
+  			</li>
+  			<li>
+  				<button v-on:click="change_page('database')"> Database </button>
+  			</li>
+  			<li>
+  				<button v-on:click="change_page('customization')"> Customization </button>
+  			</li>
+  			<li>
+  				<button v-on:click="change_page('about')"> About </button>
+  			</li>
+  		</ul>
+
+  		<!-- ********************************************* Homepage ********************************************* -->
+  		<div v-if="page == 'homepage'">
+  			<h2> Homepage </h2>
+  		</div>
+
+  		<!-- ******************************************* Database Page ******************************************* -->
+  		<div v-if="page == 'database'">
+  			<h2> Database </h2>
+  		</div>
+
+  		<!-- **************************************** Customization Page **************************************** -->
+  		<div v-if="page == 'customization'">
+  			<h2> Customization </h2>
+  		</div>
+
+  		<!-- ******************************************** About Page ******************************************** -->
+  		<div v-if="page == 'about'">
+  			<h2> About </h2>
+  		</div>
+
+		</div>
+    
+	</div>
+
+</div>
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
