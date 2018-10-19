@@ -29,7 +29,10 @@ response.google_analytics_id = None
 # ----------------------------------------------------------------------------------------------------------------------
 
 response.menu = [
-    (T('Home'), False, URL('default', 'index'), [])
+    (T('Home'), False, URL('default', 'index'), []),
+    (T('Profile'), False, URL('default', 'profile'), []),
+    (T('Groups'), False, URL('default', 'groups'), []),
+    (T('About'), False, URL('default', 'about'), [])
 ]
 
 DEVELOPMENT_MENU = True
@@ -49,7 +52,7 @@ def _():
     # useful links to internal and external resources
     # ------------------------------------------------------------------------------------------------------------------
     response.menu += [
-        (T('My Sites'), False, URL('admin', 'default', 'site')),
+        #(T('My Sites'), False, URL('admin', 'default', 'site')),
         # (T('Sample Menu 1'), False, '#', [
         #     (T('Entry1'), False, URL('default', 'entry1')),
         #     (T('Entry2'), False, URL('default', 'entry2')),
