@@ -55,9 +55,9 @@
       				<label class="quarter">Boards: </label>
       				<div class="half tags">
       					<span>6' 3" Short board</span> <span>7' 6" long board</span>
-      					<ul v-for="(board, index) in user_data.boards" class="tags">
-      						<span> ${ board } </span>
-        				</ul>
+      					<span v-for="(board, index) in user_data.boards" class="tags">
+      						 ${ board }
+        				</span>
         				<i v-if="!adding_board" class="fa fa-plus add_board_button" v-on:click="adding_board=true"></i>
         				<input v-if="adding_board" type="text" class="fill" v-model="new_board" v-on:blur="add_board()">
       				</div>

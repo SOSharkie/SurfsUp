@@ -54,12 +54,21 @@ def add_user_data():
 
 # Edit user data
 def edit_user_data():
-	print("boards= ", request.vars.boards)
+	print("boards= ", request.vars.board)
 	row = db(db.user_data.user_id == request.vars.user_id).select().first()
-	row.update_record(boards=[request.vars.boards])
+	if row.boards is not None:
+		print("row.boards=", row.boards)
+		row.boards.append(request.vars.board)
+		print("row.boards updated=", row.boards)
+		row.update_record()
+	else:
+		row.update_record(boards=[request.vars.board])
 	row.update_record(skill_level = request.vars.skill_level)
 	row.update_record(username = request.vars.username)
 	return "ok"   
+
+def delete_board():
+	print("delete board ", index)
 
 
 def delete_all_user_data():

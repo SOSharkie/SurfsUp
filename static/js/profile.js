@@ -46,7 +46,7 @@ var app = function() {
             {
                 user_id: self.vue.current_user.id,
                 username: self.vue.user_data.username,
-                boards: self.vue.user_data.boards,
+                board: self.vue.new_board,
                 skill_level: self.vue.user_data.skill_level
             }, 
             function () {
@@ -66,11 +66,23 @@ var app = function() {
 
     self.add_board = function() {
         console.log("adding board");
-        self.vue.user_data.boards = self.vue.new_board;
         self.vue.edit_user_data();
         self.vue.adding_board = false;
+        if (self.vue.user_data.boards){
+            self.vue.user_data.boards.push(self.vue.new_board);
+        } else {
+            self.vue.user_data.boards = [self.vue.new_board];
+        }
         self.vue.new_board = "New Board";
     }
+
+    // self.delete_board = function(index) {
+    //     console.log("delete board ", index);
+    //     $post(delete_board_url), { 
+    //         index: index
+    //     },
+    //     function() {}
+    // }
 
     // Complete as needed.
     self.vue = new Vue({
