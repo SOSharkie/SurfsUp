@@ -16,14 +16,14 @@
             <h2>Surf Page</h2>
             <h4>Set the time window you would like to surf:</h4>
 
-            <div class="half container">
-                <div class="slidecontainer half">
+            <div class="container half">
+                <div class="half">
                     <p>Start time: </p>
                     <input type="range" min="0" max="1440" value="720" step="15" class="slider" id="start_value" v-on:change="update_start_time()">
                     <p>Time: ${start_time}</p>
                 </div>
 
-                <div class="slidecontainer half">
+                <div class="half">
                     <p>End time: </p>
                     <input type="range" min="0" max="1440" value="720" step="15" class="slider" id="end_value" v-on:change="update_end_time()">
                     <p>Time: ${end_time}</p>
