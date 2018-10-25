@@ -54,12 +54,9 @@ def add_user_data():
 
 # Edit user data
 def edit_user_data():
-	print("boards= ", request.vars.board)
 	row = db(db.user_data.user_id == request.vars.user_id).select().first()
 	if row.boards is not None:
-		print("row.boards=", row.boards)
 		row.boards.append(request.vars.board)
-		print("row.boards updated=", row.boards)
 		row.update_record()
 	else:
 		row.update_record(boards=[request.vars.board])
@@ -68,7 +65,13 @@ def edit_user_data():
 	return "ok"   
 
 def delete_board():
-	print("delete board ", index)
+	print("delete board ", request.vars.index)
+	user_id = int(request.vars.user_id) if request.vars.user_id is not None else -1
+	index = int(request.vars.index) if request.vars.index is not None else -1
+	row = db(db.user_data.user_id == user_id).select().first()
+	row.boards.pop(index)
+	row.update_record()
+	return "ok"
 
 
 def delete_all_user_data():

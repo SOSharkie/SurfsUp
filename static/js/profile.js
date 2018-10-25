@@ -76,13 +76,22 @@ var app = function() {
         self.vue.new_board = "New Board";
     }
 
-    // self.delete_board = function(index) {
-    //     console.log("delete board ", index);
-    //     $post(delete_board_url), { 
-    //         index: index
-    //     },
-    //     function() {}
-    // }
+    self.stop_adding_board = function() {
+        self.vue.adding_board = false;
+        self.vue.new_board = "New Board";
+    }
+
+    self.delete_board = function(index) {
+        console.log("delete board ", index);
+        $.post(delete_board_url, { 
+                user_id: self.vue.current_user.id,
+                index: index
+            },
+            function() {
+                self.vue.user_data.boards.splice(index, 1);
+            }
+        );
+    }
 
     // Complete as needed.
     self.vue = new Vue({
@@ -103,7 +112,9 @@ var app = function() {
             add_user_data: self.add_user_data,
             edit_user_data: self.edit_user_data,
             delete_user_data: self.delete_user_data,
-            add_board: self.add_board
+            add_board: self.add_board,
+            stop_adding_board: self.stop_adding_board,
+            delete_board: self.delete_board
         }
 
     });

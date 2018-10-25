@@ -8,6 +8,7 @@
     var add_user_data_url = "{{=URL('api', 'add_user_data', user_signature=True)}}";
     var edit_user_data_url = "{{=URL('api', 'edit_user_data', user_signature=True)}}";
     var delete_user_data_url = "{{=URL('api', 'delete_all_user_data', user_signature=True)}}";
+    var delete_board_url = "{{=URL('api', 'delete_board', user_signature=True)}}";
 </script>
 </script>
 <link href="{{=URL('static','css/profile.css')}}" rel="stylesheet" type="text/css"/>
@@ -53,13 +54,14 @@
 				    </div>
     			<div class="container profile_field">
       				<label class="quarter">Boards: </label>
-      				<div class="half tags">
-      					<span>6' 3" Short board</span> <span>7' 6" long board</span>
-      					<span v-for="(board, index) in user_data.boards" class="tags">
+      				<div class="twothirds tags dismissible">
+      					<span v-if="!user_data.boards">Add you boards here</span>
+      					<span v-for="(board, index) in user_data.boards" class="tags" v-on:click="delete_board(index)">
       						 ${ board }
         				</span>
         				<i v-if="!adding_board" class="fa fa-plus add_board_button" v-on:click="adding_board=true"></i>
-        				<input v-if="adding_board" type="text" class="fill" v-model="new_board" v-on:blur="add_board()">
+        				<input v-if="adding_board" type="text" class="fill" v-model="new_board" 
+                v-on:blur="stop_adding_board()" v-on:keyup.enter="add_board()">
       				</div>
     			</div>
       		</div>
