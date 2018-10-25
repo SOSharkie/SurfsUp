@@ -8,9 +8,13 @@
 }
 
 .profile_field {
-	margin-bottom: 15px;
+	margin-top: 20px;
 }
 
 .add_board_button {
 	cursor: pointer;
+}
+
+.field_container {
+	height: 200px;
 }

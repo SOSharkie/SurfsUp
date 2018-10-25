@@ -18,58 +18,87 @@
 
 	<div id="vue-div" class="display:none">
 
-  		<div class="container padded">
+    <div class="container padded" v-if="!logged_in">
+      <h2> Profile Page</h2>
+      <h4> Please log in! </h4>
+    </div>
 
-      		<h2> Profile Page</h2>
+  	<div v-if="logged_in && user_data" class="container padded">
 
-      		<div v-if="!logged_in">
-      			<h4> Please log in! </h4>
-      		</div>
+      <div class="container">
+        <h2 class="profile_name"> ${ current_user.first_name } ${ current_user.last_name } </h2>
 
-      		<div class="half" v-if="logged_in && user_data">
-      			<h4 class="profile_name">${ current_user.first_name } ${ current_user.last_name } </h4>
+        <!-- The Email Container -->
+        <div class="field_container quarter spaced">
+          <div class="field_container navy rounded padded">
+            <div class="container"> 
+              <i class="half fa fa-envelope fa-5x"></i>
+              <h4 class="half"> Email </h4>
+            </div>
+            <div class="profile_field silver padded rounded">
+              <span class="silver"> ${current_user.email} </span>
+            </div>
+          </div>
+        </div>
 
-      			<div class="container profile_field">
-      				<label class="quarter">Email: </label>
-      				<div class="half">
-        				<span> ${current_user.email} </span>
-      				</div>
-    			</div>
-    			<div class="container profile_field">
-      				<label class="quarter">Username: </label>
-      				<div class="half">
-        				<input type="text" class="fill" v-model="user_data.username" v-on:blur="edit_user_data()">
-      				</div>
-    			</div>
-				<div class="container profile_field">
-				      <label class="quarter">Skill Level: </label>
-				      <div class="half">
-				        <select class="fill" v-model="user_data.skill_level" v-on:blur="edit_user_data()">
-				          <option>Beginner</option>
-				          <option>Intermediate</option>
-				          <option>Advanced</option>
-				          <option>Expert</option>
-				        </select>
-				      </div>
-				    </div>
-    			<div class="container profile_field">
-      				<label class="quarter">Boards: </label>
-      				<div class="twothirds tags dismissible">
-      					<span v-if="!user_data.boards">Add you boards here</span>
-      					<span v-for="(board, index) in user_data.boards" class="tags" v-on:click="delete_board(index)">
-      						 ${ board }
-        				</span>
-        				<i v-if="!adding_board" class="fa fa-plus add_board_button" v-on:click="adding_board=true"></i>
-        				<input v-if="adding_board" type="text" class="fill" v-model="new_board" 
-                v-on:blur="stop_adding_board()" v-on:keyup.enter="add_board()">
-      				</div>
-    			</div>
-      		</div>
+        <!-- The Username Container -->
+        <div class="field_container quarter spaced">
+          <div class="field_container blue rounded padded">
+            <div class="container"> 
+              <i class="half fa fa-user fa-5x"></i>
+              <h4 class="half">Username</h4>
+            </div>
+            <div class="profile_field silver padded rounded">
+              <input type="text" class="fill silver" v-model="user_data.username" v-on:blur="edit_user_data()">
+            </div>
+          </div>
+        </div>
+
+        <!-- The Skill Level Container -->
+        <div class="field_container quarter spaced">
+          <div class="field_container teal rounded padded">
+            <div class="container"> 
+              <i class="half fa fa-tasks fa-5x"></i>
+              <h4 class="half">Skill Level</h4>
+            </div>
+            <div class="profile_field silver padded rounded">
+              <select class="fill silver" v-model="user_data.skill_level" v-on:blur="edit_user_data()">
+                <option>Beginner</option>
+                <option>Intermediate</option>
+                <option>Advanced</option>
+                <option>Expert</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Surfboards Container -->
+      <div class="field_container half spaced">
+        <div class="field_container green rounded padded">
+          <div class="container"> 
+            <i class="half fa fa-warehouse fa-5x"></i>
+            <h4 class="half"> Your Surfboards </h4>
+          </div>
+          <div class="profile_field silver padded rounded">
+            <div class="silver container tags dismissible">
+              <span v-if="!user_data.boards">Add you boards here</span>
+              <span v-for="(board, index) in user_data.boards" class="tags" v-on:click="delete_board(index)">
+                 ${ board }
+              </span>
+              <i v-if="!adding_board" class="fa fa-plus add_board_button" v-on:click="adding_board=true"></i>
+              <input v-if="adding_board" type="text" class="fill" v-model="new_board" 
+              v-on:blur="stop_adding_board()" v-on:keyup.enter="add_board()">
+            </div>
+          </div>
+        </div>
+      </div>
 
 		</div>
     
 	</div>
 
 </div>
+
 <script src="{{=URL('static', 'js/profile.js')}}"></script>
 
