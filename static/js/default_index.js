@@ -27,7 +27,7 @@ var app = function() {
             page: 'homepage',
         },
         methods: {
-            change_page: self.change_page,
+            change_page: self.change_page
         }
 
     });

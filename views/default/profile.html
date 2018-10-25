@@ -3,8 +3,14 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var my_url = "{{=URL('api', 'my_method')}}";
+    var get_users_url = "{{=URL('api', 'get_users', user_signature=True)}}";
+    var user_data_url = "{{=URL('api', 'get_user_data', user_signature=True)}}";
+    var add_user_data_url = "{{=URL('api', 'add_user_data', user_signature=True)}}";
+    var edit_user_data_url = "{{=URL('api', 'edit_user_data', user_signature=True)}}";
+    var delete_user_data_url = "{{=URL('api', 'delete_all_user_data', user_signature=True)}}";
 </script>
+</script>
+<link href="{{=URL('static','css/profile.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
 
 <div class="main_content">
@@ -14,6 +20,49 @@
   		<div class="container padded">
 
       		<h2> Profile Page</h2>
+
+      		<div v-if="!logged_in">
+      			<h4> Please log in! </h4>
+      		</div>
+
+      		<div class="half" v-if="logged_in && user_data">
+      			<h4 class="profile_name">${ current_user.first_name } ${ current_user.last_name } </h4>
+
+      			<div class="container profile_field">
+      				<label class="quarter">Email: </label>
+      				<div class="half">
+        				<span> ${current_user.email} </span>
+      				</div>
+    			</div>
+    			<div class="container profile_field">
+      				<label class="quarter">Username: </label>
+      				<div class="half">
+        				<input type="text" class="fill" v-model="user_data.username" v-on:blur="edit_user_data()">
+      				</div>
+    			</div>
+				<div class="container profile_field">
+				      <label class="quarter">Skill Level: </label>
+				      <div class="half">
+				        <select class="fill" v-model="user_data.skill_level" v-on:blur="edit_user_data()">
+				          <option>Beginner</option>
+				          <option>Intermediate</option>
+				          <option>Advanced</option>
+				          <option>Expert</option>
+				        </select>
+				      </div>
+				    </div>
+    			<div class="container profile_field">
+      				<label class="quarter">Boards: </label>
+      				<div class="half tags">
+      					<span>6' 3" Short board</span> <span>7' 6" long board</span>
+      					<ul v-for="(board, index) in user_data.boards" class="tags">
+      						<span> ${ board } </span>
+        				</ul>
+        				<i v-if="!adding_board" class="fa fa-plus add_board_button" v-on:click="adding_board=true"></i>
+        				<input v-if="adding_board" type="text" class="fill" v-model="new_board" v-on:blur="add_board()">
+      				</div>
+    			</div>
+      		</div>
 
 		</div>
     
