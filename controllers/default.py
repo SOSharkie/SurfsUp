@@ -22,6 +22,9 @@ def index():
 def profile():
     return dict(message=T('Profile page!'))
 
+def surf():
+    return dict(message=T('Surf page!'))
+
 def groups():
     return dict(message=T('Groups page!'))
 
