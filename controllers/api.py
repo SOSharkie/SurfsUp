@@ -78,3 +78,52 @@ def delete_all_user_data():
 	"Deletes all users from the table"
 	db(db.user_data.id > -1).delete()
 	return "ok"
+
+def change_group_name():
+    row = db((db.group_data.group_owner == request.vars.group_owner) & (db.group_data.group_id == request.vars.group_id)).select().first()
+    row.update_record(group_name = request.vars.group_name)
+    return "ok"
+
+def add_group():
+    t_id = db.group_data.insert(
+	    group_owner = request.vars.group_owner,
+        group_id = request.vars.group_id,
+        group_name = request.vars.group_name,
+	)
+    r = db(db.group_data.id == t_id).select().first()
+    return response.json(dict(group_data=dict(
+		id = r.id,
+        group_owner = r.group_owner,
+		group_name = r.group_name,
+        group_id = r.group_id,
+        members = r.members
+    )))
+
+def delete_all_group_data():
+	"Deletes all groups from the table"
+	db(db.group_data.id > -1).delete()
+	return "ok"
+
+def get_groups():
+    groups = []
+    for r in db(db.group_data.group_owner == request.vars.group_owner).select():
+        t = dict(
+            group_owner = r.group_owner,
+            group_id = r.group_id,
+            group_name = r.group_name,
+            members = r.members
+        )
+        groups.append(t)
+    return response.json(dict(
+        groups = groups
+    ))
+
+def get_group():
+    r = db((db.group_data.group_owner == request.vars.group_owner) & (db.group_data.group_id == request.vars.group_id)).select().first()
+    return response.json(dict(group=dict(
+		id = r.id,
+        group_owner = r.group_owner,
+		group_name = r.group_name,
+        group_id = r.group_id,
+        members = r.members
+    )))
