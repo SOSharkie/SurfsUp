@@ -1,0 +1,80 @@
+/* line 1, ../css/surf.css */
+.colorful {
+  color: #bb8833;
+}
+
+.surf_title {
+	border-bottom: 1px solid #26a69a;
+}
+
+.surf_window {
+	padding-bottom: 25px;
+	margin-bottom: 10px;
+}
+
+section.range-slider {
+	margin-top: 10px;
+    position: relative;
+    width: 600px;
+    height: 45px;
+    text-align: center;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+section.range-slider input {
+	-webkit-appearance: none;
+	background: #d3d3d3;
+	margin-top: 10px !important;
+    pointer-events: none;
+    position: absolute;
+    overflow: hidden;
+    left: 0;
+    top: 15px;
+    width: 600px;
+    outline: none;
+    height: 25px;
+    border-radius: 10px;
+    -webkit-transition: .2s;
+}
+
+section.range-slider input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+    pointer-events: all;
+    position: relative;
+    z-index: 1;
+    outline: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #26A69A;
+    cursor: pointer;
+}
+
+section.range-slider input::-moz-range-thumb {
+    pointer-events: all;
+    position: relative;
+    z-index: 10;
+    -moz-appearance: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+section.range-slider input::-moz-range-track {
+    position: relative;
+    z-index: -1;
+    border: 0;
+}
+section.range-slider input:last-of-type::-moz-range-track {
+    -moz-appearance: none;
+    background: none transparent;
+    border: 0;
+}
+  section.range-slider input[type=range]::-moz-focus-outer {
+  border: 0;
+}

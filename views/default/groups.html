@@ -15,23 +15,23 @@
 
 <div class="main_content">
 
-	<div id="vue-div" class="display:none">
+	<div id="vue-div" class="groups">
 
   		<div class="container padded">
 
-			<h2> Groups Page </h2>
+			<h2 class="page_title"> Groups Page </h2>
 
-			<div class="container">
+			<div class="container padded">
 
 				<!-- Before adding a group -->
-				<div class="half" v-if="!is_making_group">
+				<div class="third blue group_container" v-if="!is_making_group">
 					<h6>Create a new group to surf with</h6>
 					<button class="btn rounded" v-on:click="add_group(), toggle_making_group()">
 					<i class="fa fa-plus"></i>
 					</button>
 				</div>
 
-				<div class="half" v-if="!is_making_group">
+				<div class="third navy group_container" v-if="!is_making_group">
 					<h6>Your groups</h6>
 
 					<!-- Code to display the images -->
@@ -50,7 +50,7 @@
 				</div>
 
 				<!-- While making a group -->
-				<div class="half" v-if="is_making_group">
+				<div class="half blue group_container" v-if="is_making_group">
 					<div class="container">
 						<label class="quarter">Group name: </label>
 						<div class="half">

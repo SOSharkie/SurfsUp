@@ -13,37 +13,6 @@ var app = function() {
         }
     };
 
-    time_convert = function(num)
-    { 
-        var hours = Math.floor(num / 60);
-        var minutes = num % 60;
-        if(hours == 0){
-            if(minutes < 10){
-                return (hours+12) + ":0" + minutes + "am";
-            } else {
-                return (hours+12) + ":" + minutes + "am";
-            }
-        } else if(hours < 12){
-            if(minutes < 10){
-                return hours + ":0" + minutes + "am";
-            } else {
-                return hours + ":" + minutes + "am";
-            }
-        } else if(hours == 12){
-            if(minutes < 10){
-                return hours + ":0" + minutes + "pm";
-            } else {    
-                return hours + ":" + minutes + "pm";
-            }
-        } else {
-            if(minutes < 10){
-                return (hours-12) + ":0" + minutes + "pm";
-            } else {
-                return (hours-12) + ":" + minutes + "pm";
-            }
-        }
-    }
-
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -103,6 +72,91 @@ var app = function() {
 };
 
 var APP = null;
+
+function getVals(){
+  // Get slider values
+  var parent = this.parentNode;
+  var slides = parent.getElementsByTagName("input");
+    var slide1 = parseFloat( slides[0].value );
+    var slide2 = parseFloat( slides[1].value );
+  // Neither slider will clip the other, so make sure we determine which is larger
+  if( slide1 > slide2 ){ var tmp = slide2; slide2 = slide1; slide1 = tmp; }
+  var slide1Time = time_convert(slide1);
+  var slide2Time = time_convert(slide2);
+  var displayElement = parent.getElementsByClassName("rangeValues")[0];
+      displayElement.innerHTML = slide1Time + " - " + slide2Time;
+}
+
+window.onload = function(){
+  // Initialize Sliders
+  var sliderSections = document.getElementsByClassName("range-slider");
+      for( var x = 0; x < sliderSections.length; x++ ){
+        var sliders = sliderSections[x].getElementsByTagName("input");
+        for( var y = 0; y < sliders.length; y++ ){
+          if( sliders[y].type ==="range" ){
+            sliders[y].oninput = getVals;
+            // Manually trigger event first time to display values
+            sliders[y].oninput();
+          }
+        }
+      }
+}
+
+time_convert = function(num) { 
+    var hours = Math.floor(num / 60);
+    var minutes = num % 60;
+    var current_time = new Date();
+    hours += current_time.getHours();
+    minutes += current_time.getMinutes();
+    if(minutes <= 15){
+        minutes = 15;
+    } else if (minutes <= 30){
+        minutes = 30;
+    } else if (minutes <= 45){
+        minutes = 45;
+    } else {
+        minutes = 0;
+        hours++;
+    }
+
+    if(hours == 0){
+        if(minutes < 10){
+            return "Today " + (hours+12) + ":0" + minutes + "am";
+        } else {
+            return "Today " + (hours+12) + ":" + minutes + "am";
+        }
+    } else if(hours < 12){
+        if(minutes < 10){
+            return "Today " + hours + ":0" + minutes + "am";
+        } else {
+            return "Today " + hours + ":" + minutes + "am";
+        }
+    } else if(hours == 12){
+        if(minutes < 10){
+            return "Today " + hours + ":0" + minutes + "pm";
+        } else {    
+            return "Today " + hours + ":" + minutes + "pm";
+        }
+    } else if(hours < 24) {
+        if(minutes < 10){
+            return "Today " + (hours-12) + ":0" + minutes + "pm";
+        } else {
+            return "Today " + (hours-12) + ":" + minutes + "pm";
+        }
+    } else if(hours == 24){
+        if(minutes < 10){
+            return "Tomorrow " + (hours-12) + ":0" + minutes + "am";
+        } else {    
+            return "Tomorrow " + (hours-12) + ":" + minutes + "am";
+        }
+    } else {
+        if(minutes < 10){
+            return "Tomorrow " + (hours-24) + ":0" + minutes + "am";
+        } else {
+            return "Tomorrow " + (hours-24) + ":" + minutes + "am";
+        }
+    }
+}
 
 // This will make everything accessible from the js console;
 // for instance, self.x above would be accessible as APP.x

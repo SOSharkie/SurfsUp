@@ -9,45 +9,21 @@
 
 <div class="main_content">
 
-	<div id="vue-div" class="display:none">
+	<div id="vue-div" class="homepage">
 
   	<div class="container padded">
 
-  		<!-- ************************************************ Menu ************************************************ -->
-  		<ul class="menu">
-  			<li>
-  				<button v-on:click="change_page('homepage')"> Homepage </button>
-  			</li>
-  			<li>
-  				<button v-on:click="change_page('database')"> Database </button>
-  			</li>
-  			<li>
-  				<button v-on:click="change_page('customization')"> Customization </button>
-  			</li>
-  			<li>
-  				<button v-on:click="change_page('about')"> About </button>
-  			</li>
-  		</ul>
+  		<h1 class="page_title">Surfs Up</h1>
 
-  		<!-- ********************************************* Homepage ********************************************* -->
-  		<div v-if="page == 'homepage'">
-  			<h2> Homepage </h2>
-  		</div>
+      <div class="container center">
+        <div class="half homepage_center_container">
+          <h3 class="center"> Plan the best surf sessions</h3>
+        </div>
 
-  		<!-- ******************************************* Database Page ******************************************* -->
-  		<div v-if="page == 'database'">
-  			<h2> Database </h2>
-  		</div>
-
-  		<!-- **************************************** Customization Page **************************************** -->
-  		<div v-if="page == 'customization'">
-  			<h2> Customization </h2>
-  		</div>
-
-  		<!-- ******************************************** About Page ******************************************** -->
-  		<div v-if="page == 'about'">
-  			<h2> About </h2>
-  		</div>
+        <div class="half homepage_center_container">
+          <h3 class="center"> Create and join groups</h3>
+        </div>
+      </div>
 
 		</div>
     
