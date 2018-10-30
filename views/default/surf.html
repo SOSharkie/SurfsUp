@@ -31,7 +31,8 @@
             </div>
 
             <h5>Get a recommendation!</h5>
-            <button class="btn rounded">Surf</button>
+            <button class="btn rounded" v-on:click="surf();">Surf</button>
+            <p>Surf at: ${best_spot}</p>
 
 
             
@@ -41,4 +42,7 @@
 	</div>
 
 </div>
+<script src="https://unpkg.com/vue"></script>
 <script src="{{=URL('static', 'js/surf.js')}}"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
