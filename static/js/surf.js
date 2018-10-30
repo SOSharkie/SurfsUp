@@ -53,7 +53,8 @@ var app = function() {
             start_time: '12:00pm',
             start_num: 720,
             end_time: '12:00pm',
-            end_num: 720
+            end_num: 720,
+            best_spot: ""
         },
         methods: {
             update_start_time: function(){
@@ -66,6 +67,32 @@ var app = function() {
                 var slider = document.getElementById("end_value");
                 this.end_num = slider.value;
                 this.end_time = time_convert(this.end_num);
+            },
+
+            //picks the spot with the highest wave height at 12pm
+            surf: function(){
+                var spot_ids = [];
+                //gets spot ids for santa cruz
+                axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/")
+                .then((response) => {
+                    for(var i = 0; i < response.data.length; i++){
+                        spot_ids[i] = response.data[i].spot_id;
+                    }
+                //go through each spot, check wave size
+                var max_ft = 0;
+                for(var i = 0; i < spot_ids.length; i++){
+                    this_id = spot_ids[i];
+                    //get the forecast for each spot id
+                    axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/")
+                    .then((response) => {
+                        var stats_12pm = response.data[12];
+                        if(stats_12pm.size_ft > max_ft){
+                            max_ft = stats_12pm.size_ft;
+                            this.best_spot = stats_12pm.spot_name + " (" + stats_12pm.size + " ft)";
+                        }
+                    })
+                }
+                })
             }
         }
 
