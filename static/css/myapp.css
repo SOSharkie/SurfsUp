@@ -10,8 +10,8 @@
 
 .homepage {
   background-image: url("../images/surfer_1.jpg");
-  width: auto;
   height: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
 }
 
@@ -19,28 +19,28 @@
   margin: 5%;
   width: 35%;
   border: 2px solid black;
-  padding: 10px;
-  padding-bottom: 20px;
+  padding: 10px !important;
+  padding-bottom: 20px !important;
 }
 
 .profile {
   background-image: url("../images/surfer_3.jpg");
-  width: auto;
   height: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
 }
 
 .surf {
   background-image: url("../images/surfer_4.jpg");
-  width: auto;
   height: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
 }
 
 .groups {
   background-image: url("../images/surfer_5.jpg");
-  width: auto;
   height: 100%;
+  background-size: cover;
   background-repeat: no-repeat;
 }
 

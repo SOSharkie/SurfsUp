@@ -6,12 +6,32 @@ var app = function() {
 
     Vue.config.silent = false; // show all warnings
 
-    // Extends an array
-    self.extend = function(a, b) {
-        for (var i = 0; i < b.length; i++) {
-            a.push(b[i]);
-        }
-    };
+    //picks the spot with the highest wave height at 12pm
+    self.surf = function() {
+        var spot_ids = [];
+        //gets spot ids for santa cruz
+        axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/")
+        .then((response) => {
+            for(var i = 0; i < response.data.length; i++){
+                spot_ids[i] = response.data[i].spot_id;
+            }
+            //go through each spot, check wave size
+            var max_ft = 0;
+            for(var i = 0; i < spot_ids.length; i++){
+                this_id = spot_ids[i];
+                //get the forecast for each spot id
+                axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/")
+                .then((response) => {
+                    var stats_12pm = response.data[12];
+                    if(stats_12pm.size_ft > max_ft){
+                        max_ft = stats_12pm.size_ft;
+                        this.best_spot = stats_12pm.spot_name + " " + self.start_time + 
+                        " (" + stats_12pm.size + " ft)";
+                    }
+                })
+            }
+        })
+    }
 
     // Complete as needed.
     self.vue = new Vue({
@@ -26,43 +46,7 @@ var app = function() {
             best_spot: ""
         },
         methods: {
-            update_start_time: function(){
-                var slider = document.getElementById("start_value");
-                this.start_num = slider.value;
-                this.start_time = time_convert(this.start_num);
-            },
-
-            update_end_time: function(){
-                var slider = document.getElementById("end_value");
-                this.end_num = slider.value;
-                this.end_time = time_convert(this.end_num);
-            },
-
-            //picks the spot with the highest wave height at 12pm
-            surf: function(){
-                var spot_ids = [];
-                //gets spot ids for santa cruz
-                axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/")
-                .then((response) => {
-                    for(var i = 0; i < response.data.length; i++){
-                        spot_ids[i] = response.data[i].spot_id;
-                    }
-                //go through each spot, check wave size
-                var max_ft = 0;
-                for(var i = 0; i < spot_ids.length; i++){
-                    this_id = spot_ids[i];
-                    //get the forecast for each spot id
-                    axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/")
-                    .then((response) => {
-                        var stats_12pm = response.data[12];
-                        if(stats_12pm.size_ft > max_ft){
-                            max_ft = stats_12pm.size_ft;
-                            this.best_spot = stats_12pm.spot_name + " (" + stats_12pm.size + " ft)";
-                        }
-                    })
-                }
-                })
-            }
+            surf: self.surf
         }
 
     });
@@ -74,17 +58,21 @@ var app = function() {
 var APP = null;
 
 function getVals(){
-  // Get slider values
-  var parent = this.parentNode;
-  var slides = parent.getElementsByTagName("input");
+    // Get slider values
+    var parent = this.parentNode;
+    var slides = parent.getElementsByTagName("input");
     var slide1 = parseFloat( slides[0].value );
     var slide2 = parseFloat( slides[1].value );
-  // Neither slider will clip the other, so make sure we determine which is larger
-  if( slide1 > slide2 ){ var tmp = slide2; slide2 = slide1; slide1 = tmp; }
-  var slide1Time = time_convert(slide1);
-  var slide2Time = time_convert(slide2);
-  var displayElement = parent.getElementsByClassName("rangeValues")[0];
-      displayElement.innerHTML = slide1Time + " - " + slide2Time;
+    // Neither slider will clip the other, so make sure we determine which is larger
+    if( slide1 > slide2 ){
+        var tmp = slide2; slide2 = slide1; slide1 = tmp; 
+    }
+    var slide1Time = time_convert(slide1);
+    var slide2Time = time_convert(slide2);
+    APP.start_time = slide1Time;
+    APP.end_time = slide2Time;
+    var displayElement = parent.getElementsByClassName("rangeValues")[0];
+    displayElement.innerHTML = slide1Time + " - " + slide2Time;
 }
 
 window.onload = function(){
