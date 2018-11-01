@@ -7,30 +7,27 @@ var app = function() {
     Vue.config.silent = false; // show all warnings
 
     //picks the spot with the highest wave height at 12pm
-    self.surf = function() {
+    self.surf = async function() {
         var spot_ids = [];
         //gets spot ids for santa cruz
-        axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/")
-        .then((response) => {
-            for(var i = 0; i < response.data.length; i++){
-                spot_ids[i] = response.data[i].spot_id;
+        const response = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+        for(var i = 0; i < response.data.length; i++){
+            spot_ids[i] = response.data[i].spot_id;
+        }
+        //go through each spot, check wave size
+        var max_ft = 0;
+        var best_spot_name;
+        for(var i = 0; i < spot_ids.length; i++){
+            this_id = spot_ids[i];
+            //get the forecast for each spot id
+            const response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/");
+            var stats_12pm = response.data[12];
+            if(stats_12pm.size_ft > max_ft){
+                max_ft = stats_12pm.size_ft;
+                best_spot_name = stats_12pm.spot_name; 
             }
-            //go through each spot, check wave size
-            var max_ft = 0;
-            for(var i = 0; i < spot_ids.length; i++){
-                this_id = spot_ids[i];
-                //get the forecast for each spot id
-                axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/")
-                .then((response) => {
-                    var stats_12pm = response.data[12];
-                    if(stats_12pm.size_ft > max_ft){
-                        max_ft = stats_12pm.size_ft;
-                        this.best_spot = stats_12pm.spot_name + " " + self.start_time + 
-                        " (" + stats_12pm.size + " ft)";
-                    }
-                })
-            }
-        })
+        }
+        this.best_spot = best_spot_name + " " + self.start_time + " (" + Math.round(max_ft) + " ft)";
     }
 
     // Complete as needed.
