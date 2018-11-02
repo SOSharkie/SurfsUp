@@ -115,6 +115,7 @@ var app = function() {
     //self.get_groups();
     //setTimeout(self.get_groups(), 10000);
 
+    $("#vue-div").show();
     return self;
 };
 

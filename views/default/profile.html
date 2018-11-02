@@ -49,7 +49,8 @@
               <h4 class="half">Username</h4>
             </div>
             <div class="profile_field silver padded">
-              <input type="text" class="fill silver" v-model="user_data.username" v-on:blur="edit_user_data()">
+              <input type="text" class="fill silver" v-model="user_data.username" 
+              v-on:blur="edit_user_data(false)" v-on:keyup.enter="edit_user_data(false)">
             </div>
           </div>
         </div>
@@ -62,7 +63,7 @@
               <h4 class="half">Skill Level</h4>
             </div>
             <div class="profile_field silver padded">
-              <select class="fill silver" v-model="user_data.skill_level" v-on:blur="edit_user_data()">
+              <select class="fill silver" v-model="user_data.skill_level" v-on:change="edit_user_data(false)">
                 <option>Beginner</option>
                 <option>Intermediate</option>
                 <option>Advanced</option>
@@ -82,7 +83,7 @@
           </div>
           <div class="profile_field silver padded">
             <div class="silver container tags dismissible">
-              <span v-if="!user_data.boards">Add you boards here</span>
+              <span v-if="user_data.boards.length == 0">Add your boards here</span>
               <span v-for="(board, index) in user_data.boards" class="tags" v-on:click="delete_board(index)">
                  ${ board }
               </span>

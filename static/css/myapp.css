@@ -24,6 +24,7 @@
 }
 
 .profile {
+  display: none;
   background-image: url("../images/surfer_3.jpg");
   height: 100%;
   background-size: cover;
@@ -31,6 +32,7 @@
 }
 
 .surf {
+  display: none;
   background-image: url("../images/surfer_4.jpg");
   height: 100%;
   background-size: cover;
@@ -38,6 +40,7 @@
 }
 
 .groups {
+  display: none;
   background-image: url("../images/surfer_5.jpg");
   height: 100%;
   background-size: cover;
@@ -48,3 +51,11 @@
   margin: 30px;
   padding: 20px !important;
 }
+
+.about {
+  background-image: url("../images/surfer_6.jpg");
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+

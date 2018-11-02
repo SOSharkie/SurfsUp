@@ -32,7 +32,7 @@ var app = function() {
 
     });
 
-
+    $("#vue-div").show();
     return self;
 };
 

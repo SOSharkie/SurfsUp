@@ -15,6 +15,7 @@ var app = function() {
             if (self.vue.logged_in){
                 self.get_user_data(self.vue.current_user.id);
             }
+            $("#vue-div").show();
         })
     };
 
@@ -41,9 +42,10 @@ var app = function() {
         );
     };
 
-    self.edit_user_data = function () {
+    self.edit_user_data = function (new_board) {
         $.post(edit_user_data_url,
             {
+                new_board: new_board,
                 user_id: self.vue.current_user.id,
                 username: self.vue.user_data.username,
                 board: self.vue.new_board,
@@ -66,7 +68,7 @@ var app = function() {
 
     self.add_board = function() {
         console.log("adding board");
-        self.vue.edit_user_data();
+        self.vue.edit_user_data("true");
         self.vue.adding_board = false;
         if (self.vue.user_data.boards){
             self.vue.user_data.boards.push(self.vue.new_board);
@@ -120,7 +122,6 @@ var app = function() {
     });
 
     self.get_users();
-
     return self;
 };
 
