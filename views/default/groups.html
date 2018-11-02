@@ -10,6 +10,8 @@
 	var get_groups_url = "{{=URL('api', 'get_groups', user_signature=True)}}";
 	var delete_all_group_data_url = "{{=URL('api', 'delete_all_group_data', user_signature=True)}}";
 	var get_group_url = "{{=URL('api', 'get_group', user_signature=True)}}";
+	var invite_member_url = "{{=URL('api', 'invite_member', user_signature=True)}}";
+	var delete_group_url = "{{=URL('api', 'delete_group', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -21,7 +23,7 @@
 
 			<h2 class="page_title"> Groups Page </h2>
 
-			<div class="container padded">
+			<div class="container" v-if="logged_in">
 
 				<!-- Before adding a group -->
 				<div class="third blue group_container" v-if="!is_making_group">
@@ -31,7 +33,38 @@
 					</button>
 				</div>
 
-				<div class="third navy group_container" v-if="!is_making_group">
+				<!-- While making a group -->
+				<div class="half blue group_container" v-if="is_making_group">
+					<div class="container">
+						<label class="quarter">Group name: </label>
+						<div class="half">
+							<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
+						</div>
+					</div>
+
+					<br>
+
+					<div class="container">
+						<label class="quarter">Invite members:</label>
+						<select class="fill half" v-model="invitee">
+							<option v-for="(user, index) in users" id="member">${user.email}</option>
+						</select>
+						<button class="btn rounded" v-on:click="invite_member()">
+							<i class="fas fa-user-plus"></i>
+						</button>
+					</div>
+
+					<br>
+					
+					<button class="btn rounded" v-on:click="toggle_making_group()">
+						Done
+					</button>
+					<button class="btn rounded right" v-on:click="delete_group(), toggle_making_group()">
+						Delete Group
+					</button>
+				</div>
+
+				<div class="third navy group_container">
 					<h6>Your groups</h6>
 
 					<!-- Code to display the images -->
@@ -39,7 +72,7 @@
 						<ul class="container">
 							<li v-for="(group, index) in groups" class="quarter">
 								<div>
-									<button v-on:click="get_group(index), toggle_making_group()">
+									<button v-on:click="get_group(index), making_group()">
 										${group.group_name}
 									</button>
 								</div>
@@ -48,34 +81,10 @@
 						<h2 v-if="groups.length == 0"> You have no groups, try making one! </h2>
 					</div>
 				</div>
+			</div>
 
-				<!-- While making a group -->
-				<div class="half blue group_container" v-if="is_making_group">
-					<div class="container">
-						<label class="quarter">Group name: </label>
-						<div class="half">
-							<input type="text" v-model="group_name" v-on:blur="change_group_name(group_id)" v-on:keyup.enter="change_group_name(group_id)">
-						</div>
-					</div>
-
-					<br>
-
-					<div class="container">
-						<label class="quarter">Invite members:</label>
-						<select class="fill half">
-							<option v-for="(user, index) in users">${user.first_name} ${user.last_name}</option>
-						</select>
-						<button class="btn rounded">
-							<i class="fas fa-user-plus"></i>
-						</button>
-					</div>
-
-					<br>
-					
-					<button class="btn rounded" v-on:click="get_groups(), toggle_making_group()">
-						Done
-					</button>
-				</div>
+			<div v-if="!logged_in">
+				<h3>Log in to use groups</h3>
 			</div>
 
 			<!-- <button class="btn rounded" v-on:click="get_groups()">

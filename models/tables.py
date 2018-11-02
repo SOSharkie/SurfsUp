@@ -14,12 +14,13 @@ db.define_table('user_data',
                 Field('user_id', 'integer'),
                 Field('boards', 'list:string'),
                 Field('skill_level', default='Beginner'),
-                Field('username')
+                Field('username'),
+                Field('email', default=get_user_email()),
+                Field('notifications', 'list:integer'),
                 )
 
 db.define_table('group_data',
                 Field('group_owner', default=get_user_email()),
-                Field('group_id', 'integer'),
                 Field('group_name', 'string'),
                 Field('members', 'list:string'),
                 )
