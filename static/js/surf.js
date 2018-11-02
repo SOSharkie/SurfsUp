@@ -21,10 +21,10 @@ var app = function() {
             this_id = spot_ids[i];
             //get the forecast for each spot id
             const response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/");
-            var stats_12pm = response.data[12];
-            if(stats_12pm.size_ft > max_ft){
-                max_ft = stats_12pm.size_ft;
-                best_spot_name = stats_12pm.spot_name; 
+            var current_stats = response.data[self.start_hour];
+            if(current_stats.size_ft > max_ft){
+                max_ft = current_stats.size_ft;
+                best_spot_name = current_stats.spot_name;
             }
         }
         this.best_spot = best_spot_name + " " + self.start_time + " (" + Math.round(max_ft) + " ft)";
@@ -36,10 +36,10 @@ var app = function() {
         delimiters: ['${', '}'],
         unsafeDelimiters: ['!{', '}'],
         data: {
-            start_time: '12:00pm',
-            start_num: 720,
-            end_time: '12:00pm',
-            end_num: 720,
+            start_hour: 0,
+            start_time: '',
+            end_hour: 24,
+            end_time: '',
             best_spot: ""
         },
         methods: {
@@ -64,8 +64,8 @@ function getVals(){
     if( slide1 > slide2 ){
         var tmp = slide2; slide2 = slide1; slide1 = tmp; 
     }
-    var slide1Time = time_convert(slide1);
-    var slide2Time = time_convert(slide2);
+    var slide1Time = time_convert(slide1, "start");
+    var slide2Time = time_convert(slide2, "end");
     APP.start_time = slide1Time;
     APP.end_time = slide2Time;
     var displayElement = parent.getElementsByClassName("rangeValues")[0];
@@ -73,21 +73,21 @@ function getVals(){
 }
 
 window.onload = function(){
-  // Initialize Sliders
-  var sliderSections = document.getElementsByClassName("range-slider");
-      for( var x = 0; x < sliderSections.length; x++ ){
+    // Initialize Sliders
+    var sliderSections = document.getElementsByClassName("range-slider");
+    for( var x = 0; x < sliderSections.length; x++ ){
         var sliders = sliderSections[x].getElementsByTagName("input");
         for( var y = 0; y < sliders.length; y++ ){
-          if( sliders[y].type ==="range" ){
-            sliders[y].oninput = getVals;
-            // Manually trigger event first time to display values
-            sliders[y].oninput();
-          }
+            if( sliders[y].type ==="range" ){
+                sliders[y].oninput = getVals;
+                // Manually trigger event first time to display values
+                sliders[y].oninput();
+            }
         }
-      }
+    }
 }
 
-time_convert = function(num) { 
+time_convert = function(num, start_or_end) { 
     var hours = Math.floor(num / 60);
     var minutes = num % 60;
     var current_time = new Date();
@@ -102,6 +102,12 @@ time_convert = function(num) {
     } else {
         minutes = 0;
         hours++;
+    }
+
+    if (start_or_end == "start"){
+        APP.start_hour = hours;
+    } else if (start_or_end == "end"){
+        APP.end_hour = hours;
     }
 
     if(hours == 0){
