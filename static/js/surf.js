@@ -10,24 +10,55 @@ var app = function() {
     self.surf = async function() {
         var spot_ids = [];
         //gets spot ids for santa cruz
-        const response = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
-        for(var i = 0; i < response.data.length; i++){
-            spot_ids[i] = response.data[i].spot_id;
+        const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+        for(var i = 0; i < spotResponse.data.length; i++){
+            spot_ids[i] = spotResponse.data[i].spot_id;
         }
-        //go through each spot, check wave size
+
+        //tide data for santa cruz
+        const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/");
+
+        //find time with lowest tide in window
+        var startTime = self.start_hour;
+        var endTime = self.end_hour;
+        //just check current day for now
+        if(endTime > 25){
+            endTime = 25;
+        }
+        //find time with lowest tide value in given time window
+        var lowestTideHour = startTime;
+        for(var i = startTime; i < endTime; i++){
+            var tideAtTime = tideResponse.data[i].tide;
+            if(tideAtTime < tideResponse.data[lowestTideHour].tide){
+                lowestTideHour = i;
+            }
+        }
+        var lowestTideValue = tideResponse.data[lowestTideHour].tide;
+
+        //go through each spot, check wave size at time
         var max_ft = 0;
         var best_spot_name;
+        var timeToCheck = lowestTideHour;
         for(var i = 0; i < spot_ids.length; i++){
             this_id = spot_ids[i];
             //get the forecast for each spot id
-            const response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/");
-            var current_stats = response.data[self.start_hour];
+            const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/");
+            var current_stats = spotResponse.data[timeToCheck];
             if(current_stats.size_ft > max_ft){
                 max_ft = current_stats.size_ft;
                 best_spot_name = current_stats.spot_name;
             }
         }
-        this.best_spot = best_spot_name + " " + self.start_time + " (" + Math.round(max_ft) + " ft)";
+        var timeDisplay = timeToCheck;
+        var ampm = "AM";
+        if(timeDisplay > 12){
+            if(timeDisplay != 24){
+                ampm = "PM";
+            }
+            timeDisplay -= 12;
+        }
+        this.best_spot = best_spot_name + " @ " + timeDisplay + ampm + " (" + Math.round(max_ft)
+             + " ft)" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
     }
 
     // Complete as needed.
