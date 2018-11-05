@@ -6,6 +6,30 @@ var app = function() {
 
     Vue.config.silent = false; // show all warnings
 
+    self.get_users = function () {
+        $.getJSON(get_users_url, function (data) {
+            self.vue.users = data.users;
+            self.vue.current_user = data.current_user;
+            self.vue.logged_in = data.logged_in;
+
+            if (self.vue.logged_in){
+                self.get_user_data(self.vue.current_user.id);
+            }
+            $("#vue-div").show();
+        })
+    };
+
+    self.get_user_data = function (user_id) {
+        $.get(user_data_url, {user_id: user_id}, function (data) {
+            if (data == null){
+                console.log("");
+            } else {
+                console.log("got user data", data.user_data);
+                self.vue.user_data = data.user_data;
+            }
+        })
+    };
+
     //picks the spot with the highest wave height at 12pm
     self.surf = async function() {
         var spot_ids = [];
@@ -15,16 +39,16 @@ var app = function() {
             spot_ids[i] = spotResponse.data[i].spot_id;
         }
 
-        //tide data for santa cruz
-        const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/");
+        //gets tide data for santa cruz for a whole week
+        const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
+            {params: {dcat: "week"}});
 
-        //find time with lowest tide in window
+        //click on profile
+        var skill_level = self.vue.user_data.skill_level;
+        
         var startTime = self.start_hour;
         var endTime = self.end_hour;
-        //just check current day for now
-        if(endTime > 25){
-            endTime = 25;
-        }
+
         //find time with lowest tide value in given time window
         var lowestTideHour = startTime;
         for(var i = startTime; i < endTime; i++){
@@ -42,7 +66,8 @@ var app = function() {
         for(var i = 0; i < spot_ids.length; i++){
             this_id = spot_ids[i];
             //get the forecast for each spot id
-            const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/");
+            const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
+                { params: {dcat:"week"}});
             var current_stats = spotResponse.data[timeToCheck];
             if(current_stats.size_ft > max_ft){
                 max_ft = current_stats.size_ft;
@@ -51,14 +76,24 @@ var app = function() {
         }
         var timeDisplay = timeToCheck;
         var ampm = "AM";
+        var todaytmrw = "Today";
         if(timeDisplay > 12){
-            if(timeDisplay != 24){
+            if(timeDisplay < 24){
                 ampm = "PM";
+                timeDisplay -= 12;
             }
-            timeDisplay -= 12;
+            else if(timeDisplay < 36){
+                timeDisplay -= 24;
+                todaytmrw ="Tomorrow";
+            }
+            else{
+                ampm = "PM";
+                todaytmrw = "Tomorrow";
+                timeDisplay -= 24;
+            }
         }
-        this.best_spot = best_spot_name + " @ " + timeDisplay + ampm + " (" + Math.round(max_ft)
-             + " ft)" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        this.best_spot = best_spot_name + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(max_ft * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
     }
 
     // Complete as needed.
@@ -71,14 +106,21 @@ var app = function() {
             start_time: '',
             end_hour: 24,
             end_time: '',
-            best_spot: ""
+            best_spot: "",
+            user_data: [],
+            users: [],
+            current_user: null,
+            logged_in: false
         },
         methods: {
-            surf: self.surf
+            get_users: self.get_users,
+            surf: self.surf,
+            get_user_data: self.get_user_data
         }
 
     });
 
+    self.get_users();
     $("#vue-div").show();
     return self;
 };
