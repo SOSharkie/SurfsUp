@@ -3,7 +3,8 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var my_url = "{{=URL('api', 'my_method')}}";
+    var get_users_url = "{{=URL('api', 'get_users', user_signature=True)}}";
+    var user_data_url = "{{=URL('api', 'get_user_data', user_signature=True)}}";
 </script> 
 <link href="{{=URL('static','css/surf.css')}}" rel="stylesheet" type="text/css"/>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
