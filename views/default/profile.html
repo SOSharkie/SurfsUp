@@ -3,12 +3,12 @@
 {{block head}}
 <script src="{{=URL('static', 'js/vue.js')}}"></script>
 <script>
-    var get_users_url = "{{=URL('api', 'get_users', user_signature=True)}}";
-    var user_data_url = "{{=URL('api', 'get_user_data', user_signature=True)}}";
-    var add_user_data_url = "{{=URL('api', 'add_user_data', user_signature=True)}}";
-    var edit_user_data_url = "{{=URL('api', 'edit_user_data', user_signature=True)}}";
-    var delete_user_data_url = "{{=URL('api', 'delete_all_user_data', user_signature=True)}}";
-    var delete_board_url = "{{=URL('api', 'delete_board', user_signature=True)}}";
+    var get_users_url = "{{=URL('user_api', 'get_users', user_signature=True)}}";
+    var user_data_url = "{{=URL('user_api', 'get_user_data', user_signature=True)}}";
+    var add_user_data_url = "{{=URL('user_api', 'add_user_data', user_signature=True)}}";
+    var edit_user_data_url = "{{=URL('user_api', 'edit_user_data', user_signature=True)}}";
+    var delete_user_data_url = "{{=URL('user_api', 'delete_all_user_data', user_signature=True)}}";
+    var delete_board_url = "{{=URL('user_api', 'delete_board', user_signature=True)}}";
 </script>
 </script>
 <link href="{{=URL('static','css/profile.css')}}" rel="stylesheet" type="text/css"/>
