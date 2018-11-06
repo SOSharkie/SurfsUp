@@ -5,6 +5,7 @@
 <script>
     var get_users_url = "{{=URL('api', 'get_users', user_signature=True)}}";
 	var user_data_url = "{{=URL('api', 'get_user_data', user_signature=True)}}";
+	var get_notifications_url = "{{=URL('api', 'get_notifications', user_signature=True)}}";
 	var change_group_name_url = "{{=URL('api', 'change_group_name', user_signature=True)}}";
 	var add_group_url = "{{=URL('api', 'add_group', user_signature=True)}}";
 	var get_groups_url = "{{=URL('api', 'get_groups', user_signature=True)}}";
@@ -12,6 +13,7 @@
 	var get_group_url = "{{=URL('api', 'get_group', user_signature=True)}}";
 	var invite_member_url = "{{=URL('api', 'invite_member', user_signature=True)}}";
 	var delete_group_url = "{{=URL('api', 'delete_group', user_signature=True)}}";
+	var add_to_group_url = "{{=URL('api', 'add_to_group', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -68,7 +70,7 @@
 					<h6>Your groups</h6>
 
 					<!-- Code to display the images -->
-					<div>
+					<div v-if="groups">
 						<ul class="container">
 							<li v-for="(group, index) in groups" class="quarter">
 								<div>
@@ -81,6 +83,26 @@
 						<h2 v-if="groups.length == 0"> You have no groups, try making one! </h2>
 					</div>
 				</div>
+
+				<div v-if="user_data" class="third green group_containera">
+					<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="user_data.notifications">
+						<i class="far fa-bell"></i> ${user_data.notifications.length}
+					</button>
+
+					<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="!user_data.notifications">
+						<i class="far fa-bell"></i>
+					</button>
+
+					<div v-if="is_nfc" v-for="(nfc, index) in notifications">
+						<button v-on:click="add_to_group(nfc.group_id)">
+							Accept group: ${nfc.group_name}
+						</button>
+						<button>
+							Decline group: ${nfc.group_name}
+						</button>
+					</div>
+				</div>
+
 			</div>
 
 			<div v-if="!logged_in">

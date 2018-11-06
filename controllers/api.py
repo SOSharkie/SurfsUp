@@ -40,6 +40,22 @@ def get_user_data():
                 notifications = r.notifications
 			)))
 
+def get_notifications():
+    user_id = int(request.vars.user_id) if request.vars.user_id is not None else 0
+    row = db(db.user_data.user_id == request.vars.user_id).select().first()
+    nfc = []
+    if row.notifications is not None:
+        for n in row.notifications:
+            group = db(db.group_data.id == n).select().first()
+            t = dict(
+                group_name = group.group_name,
+                group_id = group.id
+            )
+            nfc.append(t)
+    return response.json(dict(
+        nfc_data = nfc
+    ))
+        
 # Adds a user with profile data into the user data table
 def add_user_data():
 	t_id = db.user_data.insert(
@@ -138,5 +154,17 @@ def get_group():
 
 def invite_member():
     r = db(db.user_data.email == request.vars.invitee).select().first()
-    r.notifications.append(request.vars.group_id)
+    if r.notifications is not None:
+            r.notifications.append(request.vars.group_id)
+            r.update_record()
+    else:
+            r.update_record(notifications=[request.vars.group_id])
     return "ok"
+
+def add_to_group():
+    r = db(db.group_data.id == request.vars.group_id).select().first()
+    if r.members is not None:
+            r.members.append(request.vars.guest)
+            r.update_record()
+    else:
+            r.update_record(members=[request.vars.guest])

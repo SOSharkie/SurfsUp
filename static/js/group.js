@@ -27,16 +27,28 @@ var app = function() {
             } else {
                 console.log("got user data", data.user_data);
                 self.vue.user_data = data.user_data;
+                self.get_notifications(user_id);
             }
         });
     };
+
+    self.get_notifications = function(user_id){
+        $.get(get_notifications_url, {
+                user_id: user_id
+            }, function(data){
+                console.log(data.nfc_data);
+                self.vue.notifications = data.nfc_data;
+            }
+        );
+
+    }
 
     self.get_groups = function(){
         $.post(get_groups_url, {
                 group_owner: self.vue.current_user.email,
             }, function(data){
                 self.vue.groups = data.groups;
-                //console.log("got group data", self.vue.groups);
+                console.log("got group data", self.vue.groups);
             }
         );
     };
@@ -48,7 +60,8 @@ var app = function() {
                 self.vue.current_group = data.group;
                 self.vue.group_name = self.vue.current_group.group_name;
                 self.vue.group_idx = group_idx;
-        });
+            }
+        );
     };
 
     self.change_group_name = function(){
@@ -72,16 +85,26 @@ var app = function() {
                 //console.log("deleted group: ", self.vue.group_idx);
             }
         );
-    }
+    };
 
     self.invite_member = function(){
-        // $.post(invite_member_url, {
-        //         invitee: self.vue.invitee,
-        //         group_id: self.vue.groups[self.vue.group_idx].id
-        //     }, function(data){
-        //         console.log("invited: ", self.vue.invitee);
-        //     }
-        // );
+        $.post(invite_member_url, {
+                invitee: self.vue.invitee,
+                group_id: self.vue.groups[self.vue.group_idx].id
+            }, function(){
+                console.log("invited: ", self.vue.invitee);
+            }
+        );
+    };
+
+    self.add_to_group = function(group_id){
+        $.post(add_to_group_url, {
+                group_id: group_id,
+                guest: self.vue.current_user.email
+            }, function(data){
+                console.log("Added to group: ", group_id);
+            }
+        );
     };
 
     // Complete as needed.
@@ -99,8 +122,10 @@ var app = function() {
             group_data: null,
             group_idx: 0,
             invitee: null,
+            is_nfc: false,
             users: [],
             groups: [],
+            notifications: []
         },
         methods: {
             toggle_making_group: function(){
@@ -108,6 +133,9 @@ var app = function() {
             },
             making_group: function(){
                 this.is_making_group = true;
+            },
+            toggle_is_nfc: function(){
+                this.is_nfc = !this.is_nfc;
             },
             add_group: function(){
                 console.log(this.groups.length);
@@ -127,6 +155,7 @@ var app = function() {
             change_group_name: self.change_group_name,
             invite_member: self.invite_member,
             delete_group: self.delete_group,
+            add_to_group: self.add_to_group,
         }
 
     });
