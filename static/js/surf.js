@@ -32,6 +32,7 @@ var app = function() {
 
     //picks the spot with the highest wave height at 12pm
     self.surf = async function() {
+        self.vue.calculating = true;
         var spot_ids = [];
         //gets spot ids for santa cruz
         const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
@@ -163,6 +164,7 @@ var app = function() {
             this.best_spot_advanced + "\n Intermediate: " + this.best_spot_intermediate +
             "\n Beginner: " + this.best_spot_beginner + "\n Log in if you would like a personalized recommendation";
         }
+        self.vue.calculating = false;
     }
 
     // Complete as needed.
@@ -183,7 +185,8 @@ var app = function() {
             user_data: [],
             users: [],
             current_user: null,
-            logged_in: false
+            logged_in: false,
+            calculating: false
         },
         methods: {
             get_users: self.get_users,
@@ -286,11 +289,23 @@ time_convert = function(num, start_or_end) {
         } else {    
             return "Tomorrow " + (hours-12) + ":" + minutes + "am";
         }
-    } else {
+    } else if(hours < 36) {
         if(minutes < 10){
             return "Tomorrow " + (hours-24) + ":0" + minutes + "am";
         } else {
             return "Tomorrow " + (hours-24) + ":" + minutes + "am";
+        }
+    } else if(hours == 36){
+        if(minutes < 10){
+            return "Tomorrow " + (hours-24) + ":0" + minutes + "pm";
+        } else {
+            return "Tomorrow " + (hours-24) + ":" + minutes + "pm";
+        }
+    } else {
+        if(minutes < 10){
+            return "Tomorrow " + (hours-36) + ":0" + minutes + "pm";
+        } else {
+            return "Tomorrow " + (hours-36) + ":" + minutes + "pm";
         }
     }
 }

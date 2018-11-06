@@ -15,9 +15,11 @@
 
 	<div id="vue-div" class="surf">
 
+    <div class="container padded">
+
+      <h2 class="page_title" >Surf Page</h2>
+
   		<div class="container padded half">
-        
-        <h2 class="page_title" >Surf Page</h2>
 
         <div class="blue padded surf_window">
           <h4>Set the time window you would like to surf:</h4>
@@ -30,16 +32,26 @@
 
         <div class="navy padded">
           <h5>Get a recommendation!</h5>
-          <button class="btn rounded" v-on:click="surf()">Surf</button>
+          <button class="btn rounded" v-on:click="surf()">Request Recommendation</button>
+           <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
           <h5>Surf: ${best_spot_message}</h5>
-
+          <!-- <button v-on:click="confirm_surf_session()" v-if="best_spot" class="btn rounded"> Confirm Surf Session </button> -->
         </div>
+      </div>
 
-		</div>
-    
+<!--       <div class="container padded half">
+        <div class="green padded">
+          <h5>Your Surf Sessions</h5>
+          <div class="silver padded tags">
+              <span v-for="(session, index) in surf_sessions" class="tags"> ${session} </span>
+          </div>
+        </div>
+      </div> -->
+
+	 </div>
 	</div>
-
 </div>
+
 <script src="https://unpkg.com/vue"></script>
 <script src="{{=URL('static', 'js/surf.js')}}"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

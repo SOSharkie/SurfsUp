@@ -83,7 +83,7 @@
           </div>
           <div class="profile_field silver padded">
             <div class="silver container tags dismissible">
-              <span v-if="user_data.boards.length == 0">Add your boards here</span>
+              <span v-if="!user_data.boards">Add your boards here</span>
               <span v-for="(board, index) in user_data.boards" class="tags" v-on:click="delete_board(index)">
                  ${ board }
               </span>
