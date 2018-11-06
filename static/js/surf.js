@@ -2,6 +2,7 @@
 
 var app = function() {
 
+
     var self = {};
 
     Vue.config.silent = false; // show all warnings
