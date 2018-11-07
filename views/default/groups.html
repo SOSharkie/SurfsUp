@@ -97,7 +97,7 @@
 					</button>
 
 					<div v-if="is_nfc" v-for="(nfc, index) in notifications">
-						<button v-on:click="add_to_group(nfc.group_id)">
+						<button v-on:click="add_to_group(nfc.group_id), remove_notification(index)">
 							Accept: ${nfc.group_name}
 							<br>
 							Owner: ${nfc.group_owner}
