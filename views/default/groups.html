@@ -16,6 +16,7 @@
 	var delete_group_url = "{{=URL('groups_api', 'delete_group', user_signature=True)}}";
 	var add_to_group_url = "{{=URL('groups_api', 'add_to_group', user_signature=True)}}";
 </script>
+<link href="{{=URL('static','css/groups.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
 
 <div class="main_content">
@@ -29,84 +30,86 @@
 			<div class="container" v-if="logged_in">
 
 				<!-- Before adding a group -->
-				<div class="third blue group_container" v-if="!is_making_group">
-					<h6>Create a new group to surf with</h6>
-					<button class="btn rounded" v-on:click="add_group(), toggle_making_group()">
-					<i class="fa fa-plus"></i>
-					</button>
-				</div>
-
-				<!-- While making a group -->
-				<div class="half blue group_container" v-if="is_making_group">
-					<div class="container">
-						<label class="quarter">Group name: </label>
-						<div class="half">
-							<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
-						</div>
-					</div>
-
-					<br>
-
-					<div class="container" v-if="current_group">
-						<label class="quarter">Invite members:</label>
-						<select class="fill half" v-model="invitee">
-							<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
-								${user.email}
-							</option>
-						</select>
-						<button class="btn rounded" v-on:click="invite_member()">
-							<i class="fas fa-user-plus"></i>
+				<div class="container half">
+					<div class="blue group_container" v-if="!is_making_group">
+						<h6>Create a new group to surf with</h6>
+						<button class="btn rounded" v-on:click="add_group(), toggle_making_group()">
+						<i class="fa fa-plus"></i>
 						</button>
 					</div>
 
-					<br>
-					
-					<button class="btn rounded" v-on:click="toggle_making_group()">
-						Done
-					</button>
-					<button class="btn rounded right" v-on:click="delete_group(), toggle_making_group()">
-						Delete Group
-					</button>
+					<!-- While making a group -->
+					<div class="blue group_container" v-if="is_making_group">
+						<div class="container">
+							<label class="quarter">Group name: </label>
+							<div class="half">
+								<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
+							</div>
+						</div>
+
+						<br>
+
+						<div class="container" v-if="current_group">
+							<label class="quarter">Invite members:</label>
+							<select class="fill half" v-model="invitee">
+								<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
+									${user.email}
+								</option>
+							</select>
+							<button class="btn rounded" v-on:click="invite_member()">
+								<i class="fas fa-user-plus"></i>
+							</button>
+						</div>
+
+						<br>
+						
+						<button class="btn rounded" v-on:click="toggle_making_group()">
+							Done
+						</button>
+						<button class="btn rounded right" v-on:click="delete_group(), toggle_making_group()">
+							Delete Group
+						</button>
+					</div>
+
+					<div v-if="user_data" class="green group_container">
+						<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="user_data.notifications">
+							<i class="far fa-bell"></i> ${user_data.notifications.length}
+						</button>
+
+						<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="!user_data.notifications">
+							<i class="far fa-bell"></i>
+						</button>
+
+						<div v-if="is_nfc" v-for="(nfc, index) in notifications">
+							<button v-on:click="add_to_group(nfc.group_id), remove_notification(index)">
+								Accept: ${nfc.group_name}
+								<br>
+								Owner: ${nfc.group_owner}
+							</button>
+							<button v-on:click="remove_notification(index)">
+								Decline group: ${nfc.group_name}
+								<br>
+								Owner: ${nfc.group_owner}
+							</button>
+						</div>
+					</div>
 				</div>
 
 				<div class="third navy group_container">
-					<h6>Your groups</h6>
+					<h6 class="your_groups">Your groups</h6>
 
 					<!-- Code to display the images -->
 					<div v-if="groups">
 						<ul class="container">
-							<li v-for="(group, index) in groups" class="quarter">
-								<div>
+							<li v-for="(group, index) in groups">
+								<div class="group_button">
 									<button v-on:click="get_group(index), making_group()">
 										${group.group_name}
 									</button>
 								</div>
 							</li>
 						</ul>
-						<h2 v-if="groups.length == 0"> You have no groups, try making one! </h2>
-					</div>
-				</div>
-
-				<div v-if="user_data" class="third green group_containera">
-					<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="user_data.notifications">
-						<i class="far fa-bell"></i> ${user_data.notifications.length}
-					</button>
-
-					<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="!user_data.notifications">
-						<i class="far fa-bell"></i>
-					</button>
-
-					<div v-if="is_nfc" v-for="(nfc, index) in notifications">
-						<button v-on:click="add_to_group(nfc.group_id), remove_notification(index)">
-							Accept: ${nfc.group_name}
-							<br>
-							Owner: ${nfc.group_owner}
-						</button>
-						<button v-on:click="remove_notification(index)">
-							Decline group: ${nfc.group_name}
-							<br>
-							Owner: ${nfc.group_owner}
-						</button>
+						<h4 v-if="groups.length == 0"> You have no groups, try making one! </h4>
 					</div>
 				</div>
 

@@ -1,0 +1,18 @@
+
+.group_container {
+  margin: 30px;
+  padding: 20px !important;
+}
+
+.group_button {
+	width: 95%;
+}
+
+.active_group {
+	background-color: gray;
+}
+
+.your_groups {
+	text-align: center;
+	margin-bottom: 10px;
+}

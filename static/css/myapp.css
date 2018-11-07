@@ -47,11 +47,6 @@
   background-repeat: no-repeat;
 }
 
-.group_container {
-  margin: 30px;
-  padding: 20px !important;
-}
-
 .about {
   background-image: url("../images/surfer_6.jpg");
   height: 100%;
