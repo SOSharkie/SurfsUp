@@ -5,6 +5,8 @@
 <script>
     var get_users_url = "{{=URL('user_api', 'get_users', user_signature=True)}}";
     var user_data_url = "{{=URL('user_api', 'get_user_data', user_signature=True)}}";
+    var add_surf_session_url = "{{=URL('user_api', 'add_surf_session', user_signature=True)}}";
+    var delete_surf_session_url = "{{=URL('user_api', 'delete_surf_session', user_signature=True)}}";
 </script> 
 <link href="{{=URL('static','css/surf.css')}}" rel="stylesheet" type="text/css"/>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -35,18 +37,18 @@
           <button class="btn rounded" v-on:click="surf()">Request Recommendation</button>
            <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
           <h5>Surf: ${best_spot_message}</h5>
-          <!-- <button v-on:click="confirm_surf_session()" v-if="best_spot" class="btn rounded"> Confirm Surf Session </button> -->
+          <button v-on:click="confirm_surf_session()" v-if="best_spot_message" class="btn rounded"> Confirm Surf Session </button>
         </div>
       </div>
 
-<!--       <div class="container padded half">
+      <div class="container padded half">
         <div class="green padded">
           <h5>Your Surf Sessions</h5>
-          <div class="silver padded tags">
-              <span v-for="(session, index) in surf_sessions" class="tags"> ${session} </span>
+          <div class="silver padded tags dismissible">
+              <span v-for="(session, index) in user_data.surf_sessions" v-on:click="delete_surf_session(index)" class="tags"> ${session} </span>
           </div>
         </div>
-      </div> -->
+      </div>
 
 	 </div>
 	</div>

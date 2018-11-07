@@ -30,6 +30,31 @@ var app = function() {
         })
     };
 
+    self.confirm_surf_session = function() {
+        $.post(add_surf_session_url,
+            {
+                user_id: self.vue.current_user.id,
+                session: self.vue.best_spot_message
+            }, 
+            function () {
+                self.vue.user_data.surf_sessions.push(self.vue.best_spot_message);
+                console.log("added surf session", self.vue.user_data);
+            }
+        );
+    }
+
+    self.delete_surf_session = function(index) {
+        console.log("delete session ", index);
+        $.post(delete_surf_session_url, { 
+                user_id: self.vue.current_user.id,
+                index: index
+            },
+            function() {
+                self.vue.user_data.surf_sessions.splice(index, 1);
+            }
+        );
+    }
+
     //picks the spot with the highest wave height at 12pm
     self.surf = async function() {
         self.vue.calculating = true;
@@ -191,7 +216,9 @@ var app = function() {
         methods: {
             get_users: self.get_users,
             surf: self.surf,
-            get_user_data: self.get_user_data
+            get_user_data: self.get_user_data,
+            confirm_surf_session: self.confirm_surf_session,
+            delete_surf_session: self.delete_surf_session
         }
 
     });

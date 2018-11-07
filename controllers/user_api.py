@@ -35,7 +35,8 @@ def get_user_data():
 				skill_level = r.skill_level,
 				username = r.username,
                 email = r.email,
-                notifications = r.notifications
+                notifications = r.notifications,
+                surf_sessions = r.surf_sessions
 			)))
 
 def get_notifications():
@@ -76,7 +77,8 @@ def add_user_data():
 		skill_level = r.skill_level,
 		username = r.username,
         email = r.email,
-        notifications = r.notifications
+        notifications = r.notifications,
+        surf_sessions = r.surf_sessions
     )))
 
 # Edit user data
@@ -92,7 +94,25 @@ def edit_user_data():
 	else:
 		row.update_record(skill_level = request.vars.skill_level)
 		row.update_record(username = request.vars.username)
-	return "ok"   
+	return "ok" 
+
+def add_surf_session():
+	row = db(db.user_data.user_id == request.vars.user_id).select().first()
+	if row.surf_sessions is not None:
+		row.surf_sessions.append(request.vars.session)
+		row.update_record()
+	else:
+		row.update_record(surf_sessions=[request.vars.session])
+	return "ok"
+
+def delete_surf_session():
+	print("delete surf session ", request.vars.index)
+	user_id = int(request.vars.user_id) if request.vars.user_id is not None else -1
+	index = int(request.vars.index) if request.vars.index is not None else -1
+	row = db(db.user_data.user_id == user_id).select().first()
+	row.surf_sessions.pop(index)
+	row.update_record()
+	return "ok"
 
 def delete_board():
 	print("delete board ", request.vars.index)
