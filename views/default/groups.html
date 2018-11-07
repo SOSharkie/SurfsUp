@@ -6,6 +6,7 @@
     var get_users_url = "{{=URL('user_api', 'get_users', user_signature=True)}}";
 	var user_data_url = "{{=URL('user_api', 'get_user_data', user_signature=True)}}";
 	var get_notifications_url = "{{=URL('user_api', 'get_notifications', user_signature=True)}}";
+	var remove_notification_url = "{{=URL('user_api', 'remove_notification', user_signature=True)}}";
 	var change_group_name_url = "{{=URL('groups_api', 'change_group_name', user_signature=True)}}";
 	var add_group_url = "{{=URL('groups_api', 'add_group', user_signature=True)}}";
 	var get_groups_url = "{{=URL('groups_api', 'get_groups', user_signature=True)}}";
@@ -46,10 +47,12 @@
 
 					<br>
 
-					<div class="container">
+					<div class="container" v-if="current_group">
 						<label class="quarter">Invite members:</label>
 						<select class="fill half" v-model="invitee">
-							<option v-for="(user, index) in users" id="member">${user.email}</option>
+							<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
+								${user.email}
+							</option>
 						</select>
 						<button class="btn rounded" v-on:click="invite_member()">
 							<i class="fas fa-user-plus"></i>
@@ -95,10 +98,14 @@
 
 					<div v-if="is_nfc" v-for="(nfc, index) in notifications">
 						<button v-on:click="add_to_group(nfc.group_id)">
-							Accept group: ${nfc.group_name}
+							Accept: ${nfc.group_name}
+							<br>
+							Owner: ${nfc.group_owner}
 						</button>
-						<button>
+						<button v-on:click="remove_notification(index)">
 							Decline group: ${nfc.group_name}
+							<br>
+							Owner: ${nfc.group_owner}
 						</button>
 					</div>
 				</div>

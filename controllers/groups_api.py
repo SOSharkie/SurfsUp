@@ -52,11 +52,13 @@ def get_group():
 
 def invite_member():
     r = db(db.user_data.email == request.vars.invitee).select().first()
+    group_id = int(request.vars.group_id) if request.vars.group_id is not None else -1
     if r.notifications is not None:
+        if group_id not in r.notifications:
             r.notifications.append(request.vars.group_id)
             r.update_record()
     else:
-            r.update_record(notifications=[request.vars.group_id])
+        r.update_record(notifications=[request.vars.group_id])
     return "ok"
 
 def add_to_group():

@@ -40,7 +40,6 @@ var app = function() {
                 self.vue.notifications = data.nfc_data;
             }
         );
-
     }
 
     self.get_groups = function(){
@@ -60,6 +59,7 @@ var app = function() {
                 self.vue.current_group = data.group;
                 self.vue.group_name = self.vue.current_group.group_name;
                 self.vue.group_idx = group_idx;
+                console.log("current group: ", self.vue.current_group);
             }
         );
     };
@@ -106,6 +106,36 @@ var app = function() {
             }
         );
     };
+
+    self.remove_notification = function(nfc_idx){
+        $.post(remove_notification_url, {
+                user_id: self.vue.current_user.id,
+                nfc_idx: nfc_idx,
+            }, function(){
+                self.vue.notifications.splice(self.vue.nfc_idx, 1);
+                console.log("Removed nfc: ", nfc_idx);
+                self.get_user_data(self.vue.current_user.id);
+            }
+        );
+    }
+
+    //members can be null
+    //current_user.email == should make it return false
+    //if members is null return false and don't for loop
+
+    self.check_user = function(user_eml){
+        if(self.vue.current_user.email == user_eml){
+            return false;
+        }
+        if(self.vue.current_group.members != null){
+            for(var i = 0; i < self.vue.current_group.members.length; i++){
+                if(user_eml == self.vue.current_group.members[i]){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     // Complete as needed.
     self.vue = new Vue({
@@ -156,6 +186,8 @@ var app = function() {
             invite_member: self.invite_member,
             delete_group: self.delete_group,
             add_to_group: self.add_to_group,
+            remove_notification: self.remove_notification,
+            check_user: self.check_user,
         }
 
     });

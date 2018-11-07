@@ -47,12 +47,21 @@ def get_notifications():
             group = db(db.group_data.id == n).select().first()
             t = dict(
                 group_name = group.group_name,
-                group_id = group.id
+                group_id = group.id,
+				group_owner = group.group_owner
             )
             nfc.append(t)
     return response.json(dict(
         nfc_data = nfc
     ))
+
+def remove_notification():
+	user_id = user_id = int(request.vars.user_id) if request.vars.user_id is not None else 0
+	nfc_idx = int(request.vars.nfc_idx) if request.vars.index is not None else -1
+	row = db(db.user_data.user_id == user_id).select().first()
+	row.notifications.pop(nfc_idx)
+	row.update_record()
+	return "ok"
         
 # Adds a user with profile data into the user data table
 def add_user_data():
