@@ -7,6 +7,7 @@ var app = function() {
     Vue.config.silent = false; // show all warnings
 
     self.get_users = function () {
+
         $.getJSON(get_users_url, function (data) {
             self.vue.users = data.users;
             self.vue.current_user = data.current_user;
@@ -69,25 +70,31 @@ var app = function() {
         const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
             {params: {dcat: "week"}});
 
+        //gets wind data for santa cruz
+        const windResponse = await axios.get("http://api.spitcast.com/api/county/wind/santa-cruz/",
+            {params: {dcat: "week"}});
+
         //click on profile
         var skill_level = self.vue.user_data.skill_level;
         
         var startTime = self.start_hour;
         var endTime = self.end_hour;
 
-        //find time with lowest tide value in given time window
+        //find all times tide and wind will be suitable for skill level
+        var suitableTimes = [];
         var lowestTideHour = startTime;
         for(var i = startTime; i < endTime; i++){
             var tideAtTime = tideResponse.data[i].tide;
             if(tideAtTime < tideResponse.data[lowestTideHour].tide){
+                //check different wind levels based on skill level and throw out bad winds
                 lowestTideHour = i;
             }
         }
         var lowestTideValue = tideResponse.data[lowestTideHour].tide;
 
         //go through each spot, check wave size at time
-        var max_ft = 0;
-        var best_spot_expert_name;
+        var max_ft = [0,0,0];
+        var best_spots_expert_names = [];
         var timeToCheck = lowestTideHour;
         var avg_ft_in_county = 0;
         for(var i = 0; i < spot_ids.length; i++){
@@ -96,49 +103,83 @@ var app = function() {
             const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
                 { params: {dcat:"week"}});
             var current_stats = spotResponse.data[timeToCheck];
-            if(current_stats.size_ft > max_ft){
-                max_ft = current_stats.size_ft;
-                best_spot_expert_name = current_stats.spot_name;
+            if(current_stats.size_ft > max_ft[0]){
+                max_ft[0] = current_stats.size_ft;
+                best_spots_expert_names[0] = current_stats.spot_name;
+            }
+            else if(current_stats.size_ft > max_ft[1]){
+                max_ft[1] = current_stats.size_ft;
+                best_spots_expert_names[1] = current_stats.spot_name;
+            }
+            else if(current_stats.size_ft > max_ft[2]){
+                max_ft[2] = current_stats.size_ft;
+                best_spots_expert_names[2] = current_stats.spot_name;
             }
             //add to avg
             avg_ft_in_county += current_stats.size_ft;
         }
+        console.log(max_ft);
+        console.log(best_spots_expert_names);
         avg_ft_in_county = avg_ft_in_county/spot_ids.length;
 
         //go through again to look for beginner, intermeddiate, advanced
         var ft_at_avg_spot;
-        var best_spot_advanced_name;
-        var best_spot_intermediate_name;
-        var best_spot_beginner_name;
+        var best_spots_advanced_names = [];
+        var best_spots_intermediate_names = [];
+        var best_spots_beginner_names = [];
         var beginnerSpots = [];
-        var maxBeginner = 0;
-        var maxIntermediate = 0;
-        var maxAdvanced = 0;
+        var maxBeginner = [0,0,0];
+        var maxIntermediate = [0,0,0];
+        var maxAdvanced = [0,0,0];
         for(var i = 0; i < spot_ids.length; i++){
             this_id = spot_ids[i];
             //get the forecast for each spot id
             const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
                 { params: {dcat:"week"}});
             var current_stats = spotResponse.data[timeToCheck];
-            //advanced spot uses 1 ft under avg in county
+            //advanced spot uses 1.5 ft above avg in county
             if(current_stats.size_ft < (avg_ft_in_county + 1.5) && current_stats.size_ft > avg_ft_in_county){
-                if(current_stats.size_ft > maxIntermediate){
-                    maxAdvanced = current_stats.size_ft;
-                    best_spot_advanced_name = current_stats.spot_name;
+                if(current_stats.size_ft > maxAdvanced[0]){
+                    maxAdvanced[0] = current_stats.size_ft;
+                    best_spots_advanced_names[0] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxAdvanced[1]){
+                    maxAdvanced[1] = current_stats.size_ft;
+                    best_spots_advanced_names[1] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxAdvanced[2]){
+                    maxAdvanced[2] = current_stats.size_ft;
+                    best_spots_advanced_names[2] = current_stats.spot_name;
                 }
             }
-            //intermediate spot uses 1 ft over avg in county
+            //intermediate spot uses 1.5 ft under avg in county
             if(current_stats.size_ft > (avg_ft_in_county - 1.5) && current_stats.size_ft < avg_ft_in_county){
-                if(current_stats.size_ft > maxIntermediate){
-                    maxIntermediate = current_stats.size_ft;
-                    best_spot_intermediate_name = current_stats.spot_name;
+                if(current_stats.size_ft > maxIntermediate[0]){
+                    maxIntermediate[0] = current_stats.size_ft;
+                    best_spots_intermediate_names[0] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxIntermediate[1]){
+                    maxIntermediate[1] = current_stats.size_ft;
+                    best_spots_intermediate_names[1] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxIntermediate[2]){
+                    maxIntermediate[2] = current_stats.size_ft;
+                    best_spots_intermediate_names[2] = current_stats.spot_name;
                 }
             }
             //beginner uses anything under 2.5 feet
             if(current_stats.size_ft < 2.5){
-                if(current_stats.size_ft > maxBeginner){
-                    maxBeginner = current_stats.size_ft;
-                    best_spot_beginner_name = current_stats.spot_name;
+                if(current_stats.size_ft > maxBeginner[0]){
+                    maxBeginner[0] = current_stats.size_ft;
+                    best_spots_beginner_names[0] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxBeginner[1]){
+                    maxBeginner[1] = current_stats.size_ft;
+                    best_spots_beginner_names[1] = current_stats.spot_name;
+                }
+                else if(current_stats.size_ft > maxBeginner[2]){
+                    maxBeginner[2] = current_stats.size_ft;
+                    best_spots_beginner_names[2] = current_stats.spot_name;
                 }
             }
         }
@@ -163,31 +204,58 @@ var app = function() {
             }
         }
         console.log(timeDisplay);
-        this.best_spot_expert = best_spot_expert_name + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(max_ft * 100)/100
+        var best_spot_expert = best_spots_expert_names[0] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(max_ft[0] * 100)/100
              + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
-        this.best_spot_advanced = best_spot_advanced_name + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxAdvanced * 100)/100
+        var best_spot_expert2 = best_spots_expert_names[1] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(max_ft[1] * 100)/100
              + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
-        this.best_spot_intermediate = best_spot_intermediate_name + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxIntermediate * 100)/100
+        var best_spot_expert3 = best_spots_expert_names[2] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(max_ft[2] * 100)/100
              + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
-        this.best_spot_beginner = best_spot_beginner_name + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxBeginner * 100)/100
+
+        var best_spot_advanced = best_spots_advanced_names[0] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxAdvanced[0] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_advanced2 = best_spots_advanced_names[1] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxAdvanced[1] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_advanced3 = best_spots_advanced_names[2] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxAdvanced[2] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+
+        var best_spot_intermediate = best_spots_intermediate_names[0] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxIntermediate[0] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_intermediate2 = best_spots_intermediate_names[1] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxIntermediate[1] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_intermediate3 = best_spots_intermediate_names[2] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxIntermediate[2] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+
+        var best_spot_beginner = best_spots_beginner_names[0] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxBeginner[0] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_beginner2 = best_spots_beginner_names[1] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxBeginner[1] * 100)/100
+             + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
+        var best_spot_beginner3 = best_spots_beginner_names[2] + ", " + todaytmrw + " @ " + timeDisplay + ampm + ", Waves: " + Math.round(maxBeginner[2] * 100)/100
              + " ft" + " Tide: " + Math.round(lowestTideValue * 100) / 100 + " ft ";
 
         if(skill_level == 'Beginner'){
-            this.best_spot_message = this.best_spot_beginner;
+            this.best_spot_message = best_spot_beginner;
+            this.best_spot_message2 = best_spot_beginner2;
+            this.best_spot_message3 = best_spot_beginner3;
         }
         else if(skill_level == 'Intermediate'){
-            this.best_spot_message = this.best_spot_intermediate;
+            this.best_spot_message = best_spot_intermediate;
+            this.best_spot_message2 = best_spot_intermediate2;
+            this.best_spot_message3 = best_spot_intermediate3;
         }
         else if(skill_level == 'Advanced'){
-            this.best_spot_message = this.best_spot_advanced;
+            this.best_spot_message = best_spot_advanced;
+            this.best_spot_message2 = best_spot_advanced2;
+            this.best_spot_message3 = best_spot_advanced3;
         }
         else if(skill_level == 'Expert'){
-            this.best_spot_message = this.best_spot_expert;
+            this.best_spot_message =  best_spot_expert;
+            this.best_spot_message2 = best_spot_expert2;
+            this.best_spot_message3 = best_spot_expert3;
         }
         else if(skill_level == null){
-            this.best_spot_message = "Expert: " + this.best_spot_expert + "\n Advanced: " + 
-            this.best_spot_advanced + "\n Intermediate: " + this.best_spot_intermediate +
-            "\n Beginner: " + this.best_spot_beginner + "\n Log in if you would like a personalized recommendation";
+            this.best_spot_message = "Expert: " + best_spot_expert + "\n Advanced: " + 
+            best_spot_advanced + "\n Intermediate: " + best_spot_intermediate +
+            "\n Beginner: " + best_spot_beginner + "\n Log in if you would like a personalized recommendation";
         }
         self.vue.calculating = false;
     }
@@ -207,6 +275,8 @@ var app = function() {
             best_spot_intermediate: "",
             best_spot_beginner: "",
             best_spot_message: "",
+            best_spot_message2: "",
+            best_spot_message3: "",
             user_data: [],
             users: [],
             current_user: null,

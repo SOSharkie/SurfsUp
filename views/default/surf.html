@@ -36,7 +36,10 @@
           <h5>Get a recommendation!</h5>
           <button class="btn rounded" v-on:click="surf()">Request Recommendation</button>
            <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
-          <h5>Surf: ${best_spot_message}</h5>
+          <h5>Best Surf: ${best_spot_message}</h5>
+          <h5>Second Best Surf: ${best_spot_message2}</h5>
+          <h5>Third Best Surf: ${best_spot_message3}</h5>
+
           <button v-on:click="confirm_surf_session()" v-if="best_spot_message" class="btn rounded"> Confirm Surf Session </button>
         </div>
       </div>
