@@ -258,6 +258,8 @@ var app = function() {
             "\n Beginner: " + best_spot_beginner + "\n Log in if you would like a personalized recommendation";
         }
         self.vue.calculating = false;
+        //set the markers on the map after finding the best spots
+        setMarkers(timeToCheck, this.best_spot_message, this.best_spot_message2, this.best_spot_message3);
     }
 
     // Complete as needed.
