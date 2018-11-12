@@ -12,6 +12,15 @@
 	margin-bottom: 10px;
 }
 
+.rec_window {
+    margin-bottom: 10px;
+}
+
+#map {
+    height: 500px;
+    width: 100%;
+}
+
 section.range-slider {
 	margin-top: 10px;
     position: relative;

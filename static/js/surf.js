@@ -302,6 +302,61 @@ var app = function() {
 
 var APP = null;
 
+var map;
+//sets up the blank intial map of santa cruz
+function initMap() {
+  var santa_cruz = {lat: 36.9741, lng: -122.0308};
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: santa_cruz,
+    zoom: 11
+  });
+}
+//adds a marker with wave height on each surf spot 
+async function setMarkers(timeToCheck, bestSpotMessage1, bestSpotMessage2, bestSpotMessage3){
+  var bestSpot1 = bestSpotMessage1.split(",");
+  var bestSpot2 = bestSpotMessage2.split(",");
+  var bestSpot3 = bestSpotMessage3.split(",");
+  var bestImage = {
+    url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+    // This marker is 20 pixels wide by 32 pixels high.
+    size: new google.maps.Size(20, 32),
+    // The origin for this image is (0, 0).
+    origin: new google.maps.Point(0, 0),
+    // The anchor for this image is the base of the flagpole at (0, 32).
+    anchor: new google.maps.Point(0, 32)
+  };
+  const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+  for(var i = 0; i < spotResponse.data.length; i++){
+    this_id = spotResponse.data[i].spot_id;
+    const spotForecast = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
+            { params: {dcat:"week"}});
+    size_ft = Math.round(spotForecast.data[timeToCheck].size_ft * 100) / 100;
+    spot_lat = spotResponse.data[i].latitude;
+    spot_long = spotResponse.data[i].longitude;
+    spot_name = spotResponse.data[i].spot_name;
+    //best spots get different image and bounce
+    if(spot_name == bestSpot1[0] || spot_name == bestSpot2[0] || spot_name == bestSpot3[0]){
+      var marker = new google.maps.Marker({
+        position: {lat: spot_lat, lng: spot_long}, 
+        map: map,
+        icon: bestImage,
+        animation: google.maps.Animation.BOUNCE,
+        title: spot_name + "\nWaves: " + size_ft + " ft",
+        zIndex: 1
+      });
+    }
+    else{
+      var marker = new google.maps.Marker({
+        position: {lat: spot_lat, lng: spot_long}, 
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title: spot_name + "\nWaves: " + size_ft + " ft",
+        zIndex: 2
+      });
+    }
+  }
+}
+
 function getVals(){
     // Get slider values
     var parent = this.parentNode;
