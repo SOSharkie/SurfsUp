@@ -12,8 +12,21 @@
 	margin-bottom: 10px;
 }
 
+.surf_rec {
+    background-color: teal;
+    padding: 0.5em 1em;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
 .rec_window {
     margin-bottom: 10px;
+}
+
+.session_delete {
+    margin-left: 5px;
+    color: red;
+    cursor: pointer;
 }
 
 #map {

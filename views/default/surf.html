@@ -21,7 +21,7 @@
 
       <h2 class="page_title" >Surf Page</h2>
 
-  		<div class="container padded half">
+  		<div class="container padded twothirds">
 
         <div class="blue padded surf_window">
           <h4>Set the time window you would like to surf:</h4>
@@ -33,22 +33,29 @@
         </div>
 
         <div class="navy padded rec_window">
-          <h5>Get a recommendation!</h5>
-          <button class="btn rounded" v-on:click="surf()">Request Recommendation</button>
-           <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
-          <h5>Best Surf: ${best_spot_message}</h5>
-          <h5>Second Best Surf: ${best_spot_message2}</h5>
-          <h5>Third Best Surf: ${best_spot_message3}</h5>
-
-          <button v-on:click="confirm_surf_session()" v-if="best_spot_message" class="btn rounded"> Confirm Surf Session </button>
+          <div>
+            <button class="btn rounded" v-on:click="surf()"><h5>Request a recommendation!</h5></button>
+          </div>
+          <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
+          <h5 v-if="best_spot_message" class="surf_rec" v-on:click="confirm_surf_session(1)">
+            Best Surf: ${best_spot_message}</h5>
+          <h5 v-if="best_spot_message2" class="surf_rec" v-on:click="confirm_surf_session(2)">
+            2nd Best Surf: ${best_spot_message2}</h5>
+          <h5 v-if="best_spot_message3" class="surf_rec" v-on:click="confirm_surf_session(3)">
+            3rd Best Surf: ${best_spot_message3}</h5>
+          <h5 v-if="!best_spot_message" class="surf_rec">Best Surf:</h5>
+          <h5 v-if="!best_spot_message2" class="surf_rec">2nd Best Surf:</h5>
+          <h5 v-if="!best_spot_message3" class="surf_rec">3rd Best Surf:</h5>
         </div>
       </div>
 
-      <div class="container padded half">
+      <div class="container padded third">
         <div class="green padded">
           <h5>Your Surf Sessions</h5>
-          <div class="silver padded tags dismissible">
-              <span v-for="(session, index) in user_data.surf_sessions" v-on:click="delete_surf_session(index)" class="tags"> ${session} </span>
+          <div class="silver padded tags">
+              <span v-for="(session, index) in user_data.surf_sessions" class="tags teal" v-on:click="view_surf_session(session)"> ${session} 
+                <i class="fa fa-trash session_delete" v-on:click="delete_surf_session(index)"></i> 
+              </span>
           </div>
         </div>
       </div>

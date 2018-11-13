@@ -31,14 +31,21 @@ var app = function() {
         })
     };
 
-    self.confirm_surf_session = function() {
+    self.confirm_surf_session = function(session_choice) {
+        var spot = self.vue.best_spot_message;
+        if (session_choice == 2){
+            spot = self.vue.best_spot_message2
+        } else if (session_choice == 3){
+            spot = self.vue.best_spot_message3
+        }
+
         $.post(add_surf_session_url,
             {
                 user_id: self.vue.current_user.id,
-                session: self.vue.best_spot_message
+                session: spot
             }, 
             function () {
-                self.vue.user_data.surf_sessions.push(self.vue.best_spot_message);
+                self.vue.user_data.surf_sessions.push(spot);
                 console.log("added surf session", self.vue.user_data);
             }
         );
@@ -262,6 +269,11 @@ var app = function() {
         setMarkers(timeToCheck, this.best_spot_message, this.best_spot_message2, this.best_spot_message3);
     }
 
+    self.view_surf_session = async function(message) {
+        console.log("view ", message);
+        
+    }
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -290,7 +302,8 @@ var app = function() {
             surf: self.surf,
             get_user_data: self.get_user_data,
             confirm_surf_session: self.confirm_surf_session,
-            delete_surf_session: self.delete_surf_session
+            delete_surf_session: self.delete_surf_session,
+            view_surf_session: self.view_surf_session
         }
 
     });

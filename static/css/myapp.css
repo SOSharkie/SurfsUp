@@ -29,16 +29,13 @@
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
-  overflow-y: scroll;
 }
 
 .surf {
   display: none;
   background-image: url("../images/surfer_4.jpg");
-  height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
-  overflow-y: scroll;
 }
 
 .groups {
@@ -47,7 +44,6 @@
   height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
-  overflow-y: scroll;
 }
 
 .about {
