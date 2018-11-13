@@ -302,6 +302,107 @@ var app = function() {
 
 var APP = null;
 
+var map;
+//sets up the blank intial map of santa cruz
+function initMap() {
+  var santa_cruz = {lat: 36.9741, lng: -122.0308};
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: santa_cruz,
+    zoom: 11
+  });
+}
+//adds a marker with wave height on each reccomended surf spot 
+async function setMarkers(timeToCheck, bestSpotMessage1, bestSpotMessage2, bestSpotMessage3){
+  var bestSpot1 = bestSpotMessage1.split(",");
+  var bestSpot2 = bestSpotMessage2.split(",");
+  var bestSpot3 = bestSpotMessage3.split(",");
+  var bestImage = {
+     url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+     // This marker is 20 pixels wide by 32 pixels high.
+     size: new google.maps.Size(20, 32),
+     // The origin for this image is (0, 0).
+     origin: new google.maps.Point(0, 0),
+     // The anchor for this image is the base of the flagpole at (0, 32).
+     anchor: new google.maps.Point(0, 32)
+  };
+  const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+  // contains the spot_id and then the index of the spot in spotResponse in order to get the coords
+  var best_spot_ids = []; 
+  for(var i = 0; i < spotResponse.data.length && best_spot_ids.length != 3; i++){
+    spotName = spotResponse.data[i].spot_name;
+    if(spotName == bestSpot1[0] || spotName == bestSpot2[0] || spotName == bestSpot3[0]){
+        best_spot_ids.push(spotResponse.data[i].spot_id);
+        best_spot_ids.push(i);
+    }
+  }
+
+  //first spot
+  this_id = best_spot_ids[0];
+  const spotForecast1 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
+    { params: {dcat:"week"}});
+  spotName = spotForecast1.data[0].spot_name;
+  size_ft = Math.round(spotForecast1.data[timeToCheck].size_ft * 100) / 100;
+  spot_lat = spotResponse.data[best_spot_ids[1]].latitude;
+  spot_long = spotResponse.data[best_spot_ids[1]].longitude;
+  var infowindow1 = new google.maps.InfoWindow({
+    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+  });
+  var marker1 = new google.maps.Marker({
+    position: {lat: spot_lat, lng: spot_long}, 
+    map: map,
+    icon: bestImage,
+    animation: google.maps.Animation.DROP,
+    title: spotName
+  });
+  marker1.addListener('click', function() {
+    infowindow1.open(map, marker1);
+  });
+
+  //second spot
+  this_id = best_spot_ids[2];
+  const spotForecast2 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
+    { params: {dcat:"week"}});
+  spotName = spotForecast2.data[0].spot_name;
+  size_ft = Math.round(spotForecast2.data[timeToCheck].size_ft * 100) / 100;
+  spot_lat = spotResponse.data[best_spot_ids[3]].latitude;
+  spot_long = spotResponse.data[best_spot_ids[3]].longitude;
+  var infowindow2 = new google.maps.InfoWindow({
+    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+  });
+  var marker2 = new google.maps.Marker({
+    position: {lat: spot_lat, lng: spot_long}, 
+    map: map,
+    icon: bestImage,
+    animation: google.maps.Animation.DROP,
+    title: spotName
+  });
+  marker2.addListener('click', function() {
+    infowindow2.open(map, marker2);
+  });
+
+  //third spot
+  this_id = best_spot_ids[4];
+  const spotForecast3 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
+    { params: {dcat:"week"}});
+  spotName = spotForecast3.data[0].spot_name;
+  size_ft = Math.round(spotForecast3.data[timeToCheck].size_ft * 100) / 100;
+  spot_lat = spotResponse.data[best_spot_ids[5]].latitude;
+  spot_long = spotResponse.data[best_spot_ids[5]].longitude;
+  var infowindow3 = new google.maps.InfoWindow({
+    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+  });
+  var marker3 = new google.maps.Marker({
+    position: {lat: spot_lat, lng: spot_long}, 
+    map: map,
+    icon: bestImage,
+    animation: google.maps.Animation.DROP,
+    title: spotName
+  });
+  marker3.addListener('click', function() {
+    infowindow3.open(map, marker3);
+  });
+}
+
 function getVals(){
     // Get slider values
     var parent = this.parentNode;
