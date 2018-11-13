@@ -17,7 +17,7 @@ var app = function() {
                 self.get_groups();
             }
         });
-        //$.post(delete_all_group_data_url, function(){console.log("deleted all group data")});
+        //$.post(delete_all_user_data_url, function(){console.log("deleted all user data")});
     };
 
     self.get_user_data = function (user_id) {
@@ -45,6 +45,7 @@ var app = function() {
     self.get_groups = function(){
         $.post(get_groups_url, {
                 group_owner: self.vue.current_user.email,
+                user_id: self.vue.current_user.id
             }, function(data){
                 self.vue.groups = data.groups;
                 console.log("got group data", self.vue.groups);
@@ -60,6 +61,11 @@ var app = function() {
                 self.vue.group_name = self.vue.current_group.group_name;
                 self.vue.group_idx = group_idx;
                 console.log("current group: ", self.vue.current_group);
+                if(data.group.group_owner == self.vue.current_user.email){
+                    self.vue.is_modifiable = true;
+                } else {
+                    self.vue.is_modifiable = false;
+                }
             }
         );
     };
@@ -100,7 +106,8 @@ var app = function() {
     self.add_to_group = function(group_id){
         $.post(add_to_group_url, {
                 group_id: group_id,
-                guest: self.vue.current_user.email
+                guest: self.vue.current_user.email,
+                user_id: self.vue.current_user.id
             }, function(data){
                 console.log("Added to group: ", group_id);
             }
@@ -144,7 +151,7 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             is_making_group: false,
-            group_name: 'your group name',
+            group_name: 'new group',
             logged_in: false,
             current_user: null,
             current_group: null,
@@ -153,6 +160,7 @@ var app = function() {
             group_idx: 0,
             invitee: null,
             is_nfc: false,
+            is_modifiable: false,
             users: [],
             groups: [],
             notifications: []
@@ -168,13 +176,13 @@ var app = function() {
                 this.is_nfc = !this.is_nfc;
             },
             add_group: function(){
-                console.log(this.groups.length);
+                this.is_modifiable = true;
                 $.post(add_group_url, {
                         group_owner: this.current_user.email,
                         group_name: this.group_name,
                     }, function(data){
-                        this.group_data = data.group_data;
-                        console.log("created new group", this.group_data);
+                        this.current_group = data.group_data;
+                        console.log("created new group", this.current_group);
                         self.get_groups();
                     }
                 );

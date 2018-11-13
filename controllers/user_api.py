@@ -36,11 +36,11 @@ def get_user_data():
 				username = r.username,
                 email = r.email,
                 notifications = r.notifications,
-                surf_sessions = r.surf_sessions
+                surf_sessions = r.surf_sessions,
+				groups = r.groups
 			)))
 
 def get_notifications():
-    user_id = int(request.vars.user_id) if request.vars.user_id is not None else 0
     row = db(db.user_data.user_id == request.vars.user_id).select().first()
     nfc = []
     if row.notifications is not None:
@@ -57,7 +57,7 @@ def get_notifications():
     ))
 
 def remove_notification():
-	user_id = user_id = int(request.vars.user_id) if request.vars.user_id is not None else 0
+	user_id = int(request.vars.user_id) if request.vars.user_id is not None else 0
 	nfc_idx = int(request.vars.nfc_idx) if request.vars.index is not None else -1
 	row = db(db.user_data.user_id == user_id).select().first()
 	row.notifications.pop(nfc_idx)
@@ -78,7 +78,8 @@ def add_user_data():
 		username = r.username,
         email = r.email,
         notifications = r.notifications,
-        surf_sessions = r.surf_sessions
+        surf_sessions = r.surf_sessions,
+		groups = r.groups
     )))
 
 # Edit user data

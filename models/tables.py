@@ -17,7 +17,8 @@ db.define_table('user_data',
                 Field('username'),
                 Field('email', default=get_user_email()),
                 Field('notifications', 'list:integer'),
-                Field('surf_sessions', 'list:string')
+                Field('surf_sessions', 'list:string'),
+                Field('groups', 'list:integer'),
                 )
 
 db.define_table('group_data',

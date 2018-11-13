@@ -11,6 +11,7 @@
 	var add_group_url = "{{=URL('groups_api', 'add_group', user_signature=True)}}";
 	var get_groups_url = "{{=URL('groups_api', 'get_groups', user_signature=True)}}";
 	var delete_all_group_data_url = "{{=URL('groups_api', 'delete_all_group_data', user_signature=True)}}";
+	var delete_all_user_data_url = "{{=URL('user_api', 'delete_all_user_data', user_signature=True)}}";
 	var get_group_url = "{{=URL('groups_api', 'get_group', user_signature=True)}}";
 	var invite_member_url = "{{=URL('groups_api', 'invite_member', user_signature=True)}}";
 	var delete_group_url = "{{=URL('groups_api', 'delete_group', user_signature=True)}}";
@@ -33,17 +34,26 @@
 				<div class="container half">
 					<div class="blue group_container" v-if="!is_making_group">
 						<h6>Create a new group to surf with</h6>
-						<button class="btn rounded" v-on:click="add_group(), toggle_making_group()">
+						<button class="btn rounded" v-on:click="add_group()">
 						<i class="fa fa-plus"></i>
 						</button>
 					</div>
 
-					<!-- While making a group -->
-					<div class="blue group_container" v-if="is_making_group">
+					<!-- While making a group you own-->
+					<div class="blue group_container" v-if="is_making_group & is_modifiable">
 						<div class="container">
 							<label class="quarter">Group name: </label>
 							<div class="half">
 								<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
+							</div>
+						</div>
+
+						<br>
+
+						<div class="container" v-if="current_group">
+							<label class="quarter">Members: </label>
+							<div class="half" v-for="(member, index) in current_group.members">
+								<p>${member}</p>
 							</div>
 						</div>
 
@@ -68,6 +78,33 @@
 						</button>
 						<button class="btn rounded right" v-on:click="delete_group(), toggle_making_group()">
 							Delete Group
+						</button>
+					</div>
+
+					<!-- While making a group you don't own-->
+					<div class="blue group_container" v-if="is_making_group & !is_modifiable">
+						<div class="container">
+							<label class="quarter">Group name: </label>
+							<div class="half">
+								<label>${group_name}</label>
+							</div>
+						</div>
+
+						<br>
+
+						<div class="container" v-if="current_group">
+							<label class="quarter">Members: </label>
+							<div class="half" v-for="(member, index) in current_group.members">
+								<p>
+									${member}
+								</p>
+							</div>
+						</div>
+
+						<br>
+						
+						<button class="btn rounded" v-on:click="toggle_making_group()">
+							Done
 						</button>
 					</div>
 

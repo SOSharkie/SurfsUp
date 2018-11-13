@@ -29,6 +29,17 @@ def delete_group():
 
 def get_groups():
     groups = []
+    user = db(db.user_data.user_id == request.vars.user_id).select().first()
+    if user.groups is not None:
+        for r in user.groups:
+            group = db(db.group_data.id == r).select().first()
+            t = dict(
+                id = group.id,
+                group_owner = group.group_owner,
+                group_name = group.group_name,
+                members = group.members
+            )
+            groups.append(t)
     for r in db(db.group_data.group_owner == request.vars.group_owner).select():
         t = dict(
             id = r.id,
@@ -63,8 +74,19 @@ def invite_member():
 
 def add_to_group():
     r = db(db.group_data.id == request.vars.group_id).select().first()
+    u = db(db.user_data.id == request.vars.user_id).select().first()
     if r.members is not None:
-            r.members.append(request.vars.guest)
-            r.update_record()
+        r.members.append(request.vars.guest)
+        r.update_record()
+        if u.groups is not None:
+            u.groups.append(request.vars.group_id)
+            u.update_record()
+        else:
+            u.update_record(groups=[request.vars.group_id])
     else:
-            r.update_record(members=[request.vars.guest])
+        r.update_record(members=[request.vars.guest])
+        if u.groups is not None:
+            u.groups.append(request.vars.group_id)
+            u.update_record()
+        else:
+            u.update_record(groups=[request.vars.group_id])
