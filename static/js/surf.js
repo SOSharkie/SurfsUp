@@ -111,12 +111,24 @@ var app = function() {
         var tidesForBestSizes = [];
         for(var spotToCheck = 0; spotToCheck < allSpotsBestTime.length; spotToCheck++){
             if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[0]){
+                topThreeSpotSizes[2] = topThreeSpotSizes[1];
+                topThreeSpotSizes[1] = topThreeSpotSizes[0];
+                timesForBestSizes[2] = timesForBestSizes[1];
+                timesForBestSizes[1] = timesForBestSizes[0];
+                topThreeSpotNames[2] = topThreeSpotNames[1];
+                topThreeSpotNames[1] = topThreeSpotNames[0];
+                tidesForBestSizes[2] = tidesForBestSizes[1];
+                tidesForBestSizes[1] = tidesForBestSizes[0];
                 topThreeSpotSizes[0] = allSpotsSizeAtBestTime[spotToCheck];
                 timesForBestSizes[0] = allSpotsBestTime[spotToCheck];
                 topThreeSpotNames[0] = spotNames[spotToCheck]; 
                 tidesForBestSizes[0] = allSpotsTideHeights[spotToCheck];
             }
             else if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[1]){
+                topThreeSpotSizes[2] = topThreeSpotSizes[1];
+                timesForBestSizes[2] = timesForBestSizes[1];
+                topThreeSpotNames[2] = topThreeSpotNames[1];
+                tidesForBestSizes[2] = tidesForBestSizes[1];
                 topThreeSpotSizes[1] = allSpotsSizeAtBestTime[spotToCheck];
                 timesForBestSizes[1] = allSpotsBestTime[spotToCheck];
                 topThreeSpotNames[1] = spotNames[spotToCheck]; 
@@ -367,7 +379,7 @@ function calculateMinMaxHeights(skill_level){
         minHeight = 0; // no minimum 
         maxHeight = 2.5;
     }
-    else if(skill_level = 'Intermediate'){
+    else if(skill_level == 'Intermediate'){
         minHeight = 0;
         maxHeight = 3.5;
     }
