@@ -45,7 +45,11 @@ var app = function() {
                 session: spot
             }, 
             function () {
-                self.vue.user_data.surf_sessions.push(spot);
+                if (self.vue.user_data.surf_sessions == null){
+                    self.vue.user_data.surf_sessions = [spot];
+                } else {
+                    self.vue.user_data.surf_sessions.push(spot);
+                }
                 console.log("added surf session", self.vue.user_data);
             }
         );
