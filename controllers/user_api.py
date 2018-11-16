@@ -124,8 +124,7 @@ def delete_board():
 	row.update_record()
 	return "ok"
 
-
 def delete_all_user_data():
-	"Deletes all users from the table"
+	db(db.auth_user.id > 0).delete()
 	db(db.user_data.id > -1).delete()
 	return "ok"

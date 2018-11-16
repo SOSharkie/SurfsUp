@@ -58,10 +58,18 @@ var app = function() {
         );
     };
 
-    self.delete_user_data = function() {
+    self.delete_all_user_data = function() {
         $.post(delete_user_data_url, {  },
             function () {
                 console.log("deleted all user data");
+            }
+        );
+    };
+
+    self.delete_all_group_data = function() {
+        $.post(delete_group_data_url, {  },
+            function () {
+                console.log("deleted all group data");
             }
         );
     };
@@ -113,7 +121,8 @@ var app = function() {
             get_user_data: self.get_user_data,
             add_user_data: self.add_user_data,
             edit_user_data: self.edit_user_data,
-            delete_user_data: self.delete_user_data,
+            delete_all_user_data: self.delete_all_user_data,
+            delete_all_group_data: self.delete_all_group_data,
             add_board: self.add_board,
             stop_adding_board: self.stop_adding_board,
             delete_board: self.delete_board
