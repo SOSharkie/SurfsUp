@@ -17,6 +17,7 @@
 	var delete_group_url = "{{=URL('groups_api', 'delete_group', user_signature=True)}}";
 	var add_to_group_url = "{{=URL('groups_api', 'add_to_group', user_signature=True)}}";
 	var add_user_data_url = "{{=URL('user_api', 'add_user_data', user_signature=True)}}";
+	var leave_group_url = "{{=URL('groups_api', 'leave_group', user_signature=True)}}";
 </script>
 <link href="{{=URL('static','css/groups.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
@@ -46,6 +47,15 @@
 							<label class="quarter">Group name: </label>
 							<div class="half">
 								<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
+							</div>
+						</div>
+
+						<br>
+
+						<div class="container" v-if="current_group">
+							<label class="quarter">Group owner: </label>
+							<div class="half">
+								<p>${current_group.group_owner}</p>
 							</div>
 						</div>
 
@@ -106,6 +116,15 @@
 						<br>
 
 						<div class="container" v-if="current_group">
+							<label class="quarter">Group owner: </label>
+							<div class="half">
+								<p>${current_group.group_owner}</p>
+							</div>
+						</div>
+
+						<br>
+
+						<div class="container" v-if="current_group">
 							<label class="quarter">Members: </label>
 							<div class="half" v-for="(member, index) in current_group.members">
 								<p>
@@ -118,6 +137,9 @@
 						
 						<button class="btn rounded" v-on:click="toggle_making_group()">
 							Done
+						</button>
+						<button class="btn rounded right" v-on:click="leave_group(), toggle_making_group()">
+							Leave group
 						</button>
 					</div>
 

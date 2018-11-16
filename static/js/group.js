@@ -137,7 +137,7 @@ var app = function() {
                 self.get_user_data(self.vue.current_user.id);
             }
         );
-    }
+    };
 
     //members can be null
     //current_user.email == should make it return false
@@ -155,7 +155,22 @@ var app = function() {
             }
         }
         return true;
-    }
+    };
+
+    self.leave_group = function(){
+        $.post(leave_group_url, {
+                group_id: self.vue.groups[self.vue.group_idx].id,
+                member: self.vue.current_user.email,
+                user_id: self.vue.current_user.id
+            }, function(){
+                console.log("removed from group");
+                console.log(self.vue.groups[self.vue.group_idx].id);
+                console.log("removed from user groups")
+                console.log(self.vue.current_user);
+                self.get_groups();
+            }
+        );
+    };
 
     // Complete as needed.
     self.vue = new Vue({
@@ -214,6 +229,7 @@ var app = function() {
             add_to_group: self.add_to_group,
             remove_notification: self.remove_notification,
             check_user: self.check_user,
+            leave_group: self.leave_group,
         }
 
     });

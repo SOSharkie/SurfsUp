@@ -90,3 +90,18 @@ def add_to_group():
             u.update_record()
         else:
             u.update_record(groups=[request.vars.group_id])
+
+def leave_group():
+    r = db(db.group_data.id == request.vars.group_id).select().first()
+    u = db(db.user_data.id == request.vars.user_id).select().first()
+    for idx, mem in enumerate(r.members):
+        if mem == request.vars.member:
+            r.members.pop(idx)
+            r.update_record()
+    group_id = int(request.vars.group_id) if request.vars.group_id is not None else -1
+    for index, group in enumerate(u.groups):
+        # group = int(group) if group is not None else -1
+        if group == group_id:
+            u.groups.pop(index)
+            u.update_record()
+    return "ok"
