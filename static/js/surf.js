@@ -148,7 +148,7 @@ var app = function() {
         self.vue.calculating = false;
 
         //had to set to 12 to because it no longer only suggests 1 time, *Daniel ToDo*
-        setMarkers(12, this.best_spot_message, this.best_spot_message2, this.best_spot_message3);
+        setMarkers(this.best_spot_message, this.best_spot_message2, this.best_spot_message3);
     }
 
     self.view_surf_session = async function(message) {
@@ -166,13 +166,12 @@ var app = function() {
             start_time: '',
             end_hour: 24,
             end_time: '',
-            best_spot_expert: "",
-            best_spot_advanced: "",
-            best_spot_intermediate: "",
-            best_spot_beginner: "",
             best_spot_message: "",
             best_spot_message2: "",
             best_spot_message3: "",
+            marker1: null,
+            marker2: null,
+            marker3: null,
             user_data: [],
             users: [],
             current_user: null,
@@ -206,97 +205,96 @@ function initMap() {
     zoom: 11
   });
 }
+
+function clearMarkers(){
+    if(self.marker1 != null){
+        marker1.setMap(null);
+    }
+    if(self.marker2 != null){
+        marker2.setMap(null);
+    }
+    if(self.marker3 != null){
+        marker3.setMap(null);
+    }
+}
 //adds a marker with wave height on each reccomended surf spot 
-async function setMarkers(timeToCheck, bestSpotMessage1, bestSpotMessage2, bestSpotMessage3){
+async function setMarkers(bestSpotMessage1, bestSpotMessage2, bestSpotMessage3){
+  //first remove old markers
+  clearMarkers();
+  //parses best spot message to get data to be displayed when a marker is clicked
+  //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
   var bestSpot1 = bestSpotMessage1.split(",");
   var bestSpot2 = bestSpotMessage2.split(",");
   var bestSpot3 = bestSpotMessage3.split(",");
-  var bestImage = {
-     url: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-     // This marker is 20 pixels wide by 32 pixels high.
-     size: new google.maps.Size(20, 32),
-     // The origin for this image is (0, 0).
-     origin: new google.maps.Point(0, 0),
-     // The anchor for this image is the base of the flagpole at (0, 32).
-     anchor: new google.maps.Point(0, 32)
-  };
+  //this api call is only to get the coords of the spots
   const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
-  // contains the spot_id and then the index of the spot in spotResponse in order to get the coords
-  var best_spot_ids = []; 
-  for(var i = 0; i < spotResponse.data.length && best_spot_ids.length != 3; i++){
+  var bestSpotCoords = []; 
+  for(var i = 0; i < spotResponse.data.length && bestSpotCoords.length != 6; i++){
     spotName = spotResponse.data[i].spot_name;
     if(spotName == bestSpot1[0] || spotName == bestSpot2[0] || spotName == bestSpot3[0]){
-        best_spot_ids.push(spotResponse.data[i].spot_id);
-        best_spot_ids.push(i);
+        bestSpotCoords.push(spotResponse.data[i].latitude);
+        bestSpotCoords.push(spotResponse.data[i].longitude);
     }
   }
 
   //first spot
-  this_id = best_spot_ids[0];
-  const spotForecast1 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
-    { params: {dcat:"week"}});
-  spotName = spotForecast1.data[0].spot_name;
-  size_ft = Math.round(spotForecast1.data[timeToCheck].size_ft * 100) / 100;
-  spot_lat = spotResponse.data[best_spot_ids[1]].latitude;
-  spot_long = spotResponse.data[best_spot_ids[1]].longitude;
+  spotName = bestSpot1[0];
   var infowindow1 = new google.maps.InfoWindow({
-    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+    content:'<div><b>'+ bestSpot1[0] + '</b></div>' + 
+            '<div>' + bestSpot1[1] + '</div>' + 
+            '<div>' + bestSpot1[2] + '</div>' + 
+            bestSpot1[3],
   });
-  var marker1 = new google.maps.Marker({
-    position: {lat: spot_lat, lng: spot_long}, 
+  var marker1 = new google.maps.Marker({ 
+    position: {lat: bestSpotCoords[0], lng: bestSpotCoords[1]}, 
     map: map,
-    icon: bestImage,
     animation: google.maps.Animation.DROP,
     title: spotName
   });
+  self.marker1 = marker1;
   marker1.addListener('click', function() {
     infowindow1.open(map, marker1);
   });
 
   //second spot
-  this_id = best_spot_ids[2];
-  const spotForecast2 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
-    { params: {dcat:"week"}});
-  spotName = spotForecast2.data[0].spot_name;
-  size_ft = Math.round(spotForecast2.data[timeToCheck].size_ft * 100) / 100;
-  spot_lat = spotResponse.data[best_spot_ids[3]].latitude;
-  spot_long = spotResponse.data[best_spot_ids[3]].longitude;
+  spotName = bestSpot2[0];
   var infowindow2 = new google.maps.InfoWindow({
-    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+    content:'<div><b>'+ bestSpot2[0] + '</b></div>' + 
+            '<div>' + bestSpot2[1] + '</div>' + 
+            '<div>' + bestSpot2[2] + '</div>' + 
+            bestSpot2[3],
   });
   var marker2 = new google.maps.Marker({
-    position: {lat: spot_lat, lng: spot_long}, 
+    position: {lat: bestSpotCoords[2], lng: bestSpotCoords[3]}, 
     map: map,
-    icon: bestImage,
     animation: google.maps.Animation.DROP,
     title: spotName
   });
+  self.marker2 = marker2;
   marker2.addListener('click', function() {
     infowindow2.open(map, marker2);
   });
 
   //third spot
-  this_id = best_spot_ids[4];
-  const spotForecast3 = await axios.get("http://api.spitcast.com/api/spot/forecast/" + this_id + "/",
-    { params: {dcat:"week"}});
-  spotName = spotForecast3.data[0].spot_name;
-  size_ft = Math.round(spotForecast3.data[timeToCheck].size_ft * 100) / 100;
-  spot_lat = spotResponse.data[best_spot_ids[5]].latitude;
-  spot_long = spotResponse.data[best_spot_ids[5]].longitude;
+  spotName = bestSpot3[0];
   var infowindow3 = new google.maps.InfoWindow({
-    content: '<div>'+spotName+'</div>' + "Waves " + size_ft + " ft",
+    content:'<div><b>'+ bestSpot3[0] + '</b></div>' + 
+            '<div>' + bestSpot3[1] + '</div>' + 
+            '<div>' + bestSpot3[2] + '</div>' + 
+            bestSpot3[3],
   });
   var marker3 = new google.maps.Marker({
-    position: {lat: spot_lat, lng: spot_long}, 
+    position: {lat: bestSpotCoords[4], lng: bestSpotCoords[5]}, 
     map: map,
-    icon: bestImage,
     animation: google.maps.Animation.DROP,
     title: spotName
   });
+  self.marker3 = marker3;
   marker3.addListener('click', function() {
     infowindow3.open(map, marker3);
   });
 }
+
 
 //takes list of spot IDs, and a time 
 //returns average wave size in the county at that time
@@ -397,7 +395,7 @@ function calculateMinMaxHeights(skill_level){
 function createSpotMessage(spotName, time, waveSize, tideHeight){
     var ampm = "AM";
     var todayTmrw = "Today";
-    if(time > 12){
+    if(time >= 12){
         if(time < 24){
             ampm = "PM";
             time -= 12;
@@ -414,9 +412,12 @@ function createSpotMessage(spotName, time, waveSize, tideHeight){
         if(time == 0){
             time = 12;
         }
+        if(time == 12){
+            ampm = "PM";
+        }
     }
     var message = spotName + ", " + todayTmrw + " @ " + time + ampm + ", Waves: " + Math.round(waveSize * 100)/100
-        + " ft" + " Tide: " + Math.round(tideHeight * 100)/100 + " ft ";
+        + " ft," + " Tide: " + Math.round(tideHeight * 100)/100 + " ft ";
     return message;
 }
 
