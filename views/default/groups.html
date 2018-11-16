@@ -16,6 +16,7 @@
 	var invite_member_url = "{{=URL('groups_api', 'invite_member', user_signature=True)}}";
 	var delete_group_url = "{{=URL('groups_api', 'delete_group', user_signature=True)}}";
 	var add_to_group_url = "{{=URL('groups_api', 'add_to_group', user_signature=True)}}";
+	var add_user_data_url = "{{=URL('user_api', 'add_user_data', user_signature=True)}}";
 </script>
 <link href="{{=URL('static','css/groups.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
@@ -66,9 +67,21 @@
 									${user.email}
 								</option>
 							</select>
-							<button class="btn rounded" v-on:click="invite_member()">
+							<button class="btn rounded" v-on:click="invite_member(), toggle_alert()">
 								<i class="fas fa-user-plus"></i>
 							</button>
+						</div>
+
+						<br>
+
+						<!-- <div class="alert">
+							<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+							Invited user
+						</div> -->
+
+						<div class="alert" v-if="display_alert">
+							<span class="closebtn" v-on:click="toggle_alert()">&times;</span> 
+							Invited user
 						</div>
 
 						<br>

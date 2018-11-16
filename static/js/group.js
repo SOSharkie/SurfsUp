@@ -14,7 +14,6 @@ var app = function() {
 
             if (self.vue.logged_in){
                 self.get_user_data(self.vue.current_user.id);
-                self.get_groups();
             }
         });
         //$.post(delete_all_user_data_url, function(){console.log("deleted all user data")});
@@ -23,13 +22,27 @@ var app = function() {
     self.get_user_data = function (user_id) {
         $.get(user_data_url, {user_id: user_id}, function (data) {
             if (data == null){
-                //self.add_user_data();
+                self.add_user_data();
             } else {
                 console.log("got user data", data.user_data);
                 self.vue.user_data = data.user_data;
                 self.get_notifications(user_id);
+                self.get_groups();
             }
         });
+    };
+
+    self.add_user_data = function () {
+        $.post(add_user_data_url,
+            {
+                user_id: self.vue.current_user.id
+            }, 
+            function (data) {
+                console.log("added user_data", data.user_data);
+                self.vue.user_data = data.user_data;
+                self.get_groups();
+            }
+        );
     };
 
     self.get_notifications = function(user_id){
@@ -161,6 +174,7 @@ var app = function() {
             invitee: null,
             is_nfc: false,
             is_modifiable: false,
+            display_alert: false,
             users: [],
             groups: [],
             notifications: []
@@ -175,11 +189,15 @@ var app = function() {
             toggle_is_nfc: function(){
                 this.is_nfc = !this.is_nfc;
             },
+            toggle_alert: function(){
+                this.display_alert = true;
+                setTimeout(function(){self.vue.display_alert = false;}, 3500);
+            },
             add_group: function(){
                 this.is_modifiable = true;
                 $.post(add_group_url, {
                         group_owner: this.current_user.email,
-                        group_name: this.group_name,
+                        group_name: 'new group',
                     }, function(data){
                         this.current_group = data.group_data;
                         console.log("created new group", this.current_group);
