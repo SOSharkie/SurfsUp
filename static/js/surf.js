@@ -78,6 +78,7 @@ var app = function() {
             }
         }
         
+        var county = "santa-cruz/";
         self.vue.calculating = true;
         var skill_level = self.vue.user_data.skill_level;
         var startTime = self.start_hour;
@@ -86,18 +87,18 @@ var app = function() {
         var spotNames = [];
 
         //gets spot ids and spot names for santa cruz
-        const countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+        const countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
         for(var i = 0; i < countyResponse.data.length; i++){
             spotIds[i] = countyResponse.data[i].spot_id;
             spotNames[i] = countyResponse.data[i].spot_name;
         }
         //gets tide data for santa cruz for a whole week
-        const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
+        const tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/" + county,
             {params: {dcat: "week"}});
 
 
         //gets wind data for santa cruz
-        const windResponse = await axios.get("http://api.spitcast.com/api/county/wind/santa-cruz/",
+        const windResponse = await axios.get("http://api.spitcast.com/api/county/wind/" + county,
             {params: {dcat: "week"}}); 
 
         var bestTideTimes = findBestTideTimes(startTime, endTime, tideResponse, spotIds);
@@ -150,19 +151,22 @@ var app = function() {
                 tidesForBestSizes[2] = allSpotsTideHeights[spotToCheck];
             }
         }
+        //clear all markers on the map before adding new recommended spots
+        clearMarkers();
         this.best_spot_message = createSpotMessage(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0] );
         this.best_spot_message2 = createSpotMessage(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
         this.best_spot_message3 = createSpotMessage(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
 
         self.vue.calculating = false;
 
-        //had to set to 12 to because it no longer only suggests 1 time, *Daniel ToDo*
-        setMarkers(this.best_spot_message, this.best_spot_message2, this.best_spot_message3);
+        //add markers to each spot
+        setMarker(this.best_spot_message);
+        setMarker(this.best_spot_message2);
+        setMarker(this.best_spot_message3);
     }
 
     self.view_surf_session = async function(message) {
-        console.log("view ", message);
-        
+        setMarker(message);
     }
 
     self.get_groups = function(){
@@ -189,9 +193,7 @@ var app = function() {
             best_spot_message: "",
             best_spot_message2: "",
             best_spot_message3: "",
-            marker1: null,
-            marker2: null,
-            marker3: null,
+            markers: [],
             user_data: [],
             users: [],
             current_user: null,
@@ -230,102 +232,52 @@ var APP = null;
 var map;
 //sets up the blank intial map of santa cruz
 function initMap() {
-  var santa_cruz = {lat: 36.9741, lng: -122.0308};
+  var santa_cruz = {lat: 36.974117, lng: -122.030792};
   map = new google.maps.Map(document.getElementById('map'), {
-    center: santa_cruz,
-    zoom: 11
+    zoom: 10,
+    center: santa_cruz
   });
 }
 
 function clearMarkers(){
-    if(self.marker1 != null){
-        marker1.setMap(null);
-    }
-    if(self.marker2 != null){
-        marker2.setMap(null);
-    }
-    if(self.marker3 != null){
-        marker3.setMap(null);
+    for(var i = 0; i < APP.vue.markers.length; i++){
+        APP.vue.markers[i].setMap(null);
     }
 }
 //adds a marker with wave height on each reccomended surf spot 
-async function setMarkers(bestSpotMessage1, bestSpotMessage2, bestSpotMessage3){
-  //first remove old markers
-  clearMarkers();
+async function setMarker(surfSpotMessage){
   //parses best spot message to get data to be displayed when a marker is clicked
   //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
-  var bestSpot1 = bestSpotMessage1.split(",");
-  var bestSpot2 = bestSpotMessage2.split(",");
-  var bestSpot3 = bestSpotMessage3.split(",");
+  var parsedMessage = surfSpotMessage.split(",");
+  county = "santa-cruz/"
   //this api call is only to get the coords of the spots
-  const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+  const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
   var bestSpotCoords = []; 
-  for(var i = 0; i < spotResponse.data.length && bestSpotCoords.length != 6; i++){
+  for(var i = 0; i < spotResponse.data.length && bestSpotCoords.length != 2; i++){
     spotName = spotResponse.data[i].spot_name;
-    if(spotName == bestSpot1[0] || spotName == bestSpot2[0] || spotName == bestSpot3[0]){
+    if(spotName == parsedMessage[0]){
         bestSpotCoords.push(spotResponse.data[i].latitude);
         bestSpotCoords.push(spotResponse.data[i].longitude);
     }
   }
-
-  //first spot
-  spotName = bestSpot1[0];
-  var infowindow1 = new google.maps.InfoWindow({
-    content:'<div><b>'+ bestSpot1[0] + '</b></div>' + 
-            '<div>' + bestSpot1[1] + '</div>' + 
-            '<div>' + bestSpot1[2] + '</div>' + 
-            bestSpot1[3],
+  spotName = parsedMessage[0];
+  var infowindow = new google.maps.InfoWindow({
+    content:'<div><b>'+ spotName + '</b></div>' + 
+            '<div>' + parsedMessage[1] + '</div>' + 
+            '<div>' + parsedMessage[2] + '</div>' + 
+            parsedMessage[3],
   });
-  var marker1 = new google.maps.Marker({ 
+  var marker = new google.maps.Marker({ 
     position: {lat: bestSpotCoords[0], lng: bestSpotCoords[1]}, 
     map: map,
     animation: google.maps.Animation.DROP,
     title: spotName
   });
-  self.marker1 = marker1;
-  marker1.addListener('click', function() {
-    infowindow1.open(map, marker1);
-  });
-
-  //second spot
-  spotName = bestSpot2[0];
-  var infowindow2 = new google.maps.InfoWindow({
-    content:'<div><b>'+ bestSpot2[0] + '</b></div>' + 
-            '<div>' + bestSpot2[1] + '</div>' + 
-            '<div>' + bestSpot2[2] + '</div>' + 
-            bestSpot2[3],
-  });
-  var marker2 = new google.maps.Marker({
-    position: {lat: bestSpotCoords[2], lng: bestSpotCoords[3]}, 
-    map: map,
-    animation: google.maps.Animation.DROP,
-    title: spotName
-  });
-  self.marker2 = marker2;
-  marker2.addListener('click', function() {
-    infowindow2.open(map, marker2);
-  });
-
-  //third spot
-  spotName = bestSpot3[0];
-  var infowindow3 = new google.maps.InfoWindow({
-    content:'<div><b>'+ bestSpot3[0] + '</b></div>' + 
-            '<div>' + bestSpot3[1] + '</div>' + 
-            '<div>' + bestSpot3[2] + '</div>' + 
-            bestSpot3[3],
-  });
-  var marker3 = new google.maps.Marker({
-    position: {lat: bestSpotCoords[4], lng: bestSpotCoords[5]}, 
-    map: map,
-    animation: google.maps.Animation.DROP,
-    title: spotName
-  });
-  self.marker3 = marker3;
-  marker3.addListener('click', function() {
-    infowindow3.open(map, marker3);
+  APP.vue.markers.push(marker);
+  marker.addListener('click', function() {
+    infowindow.open(map, marker);
   });
 }
-
 
 //takes list of spot IDs, and a time 
 //returns average wave size in the county at that time
