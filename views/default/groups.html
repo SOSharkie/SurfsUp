@@ -34,7 +34,7 @@
 
 				<!-- Before adding a group -->
 				<div class="container half">
-					<div class="blue group_container" v-if="!is_making_group">
+					<div class="semi_transparent_box group_container" v-if="!is_making_group">
 						<h6>Create a new group to surf with</h6>
 						<button class="btn rounded" v-on:click="add_group()">
 						<i class="fa fa-plus"></i>
@@ -42,7 +42,7 @@
 					</div>
 
 					<!-- While making a group you own-->
-					<div class="blue group_container" v-if="is_making_group & is_modifiable">
+					<div class="semi_transparent_box group_container" v-if="is_making_group & is_modifiable">
 						<div class="container">
 							<label class="quarter">Group name: </label>
 							<div class="half">
@@ -105,7 +105,7 @@
 					</div>
 
 					<!-- While making a group you don't own-->
-					<div class="blue group_container" v-if="is_making_group & !is_modifiable">
+					<div class="semi_transparent_box group_container" v-if="is_making_group & !is_modifiable">
 						<div class="container">
 							<label class="quarter">Group name: </label>
 							<div class="half">
@@ -143,7 +143,7 @@
 						</button>
 					</div>
 
-					<div v-if="user_data" class="green group_container">
+					<div v-if="user_data" class="semi_transparent_box group_container">
 						<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="user_data.notifications">
 							<i class="far fa-bell"></i> ${user_data.notifications.length}
 						</button>
@@ -167,7 +167,7 @@
 					</div>
 				</div>
 
-				<div class="third navy group_container">
+				<div class="third semi_transparent_box group_container">
 					<h6 class="your_groups">Your groups</h6>
 
 					<div v-if="groups">

@@ -25,27 +25,27 @@
   		<div class="container padded twothirds">
 
         <!---------------------- TIME WINDOW CONTAINER ---------------------->
-        <div class="padded surf_window">
-          <h4>Set the time window you would like to surf:</h4>
+        <div class="padded time_window semi_transparent_box">
+          <h4 class="center">Surf Time Window</h4>
           <section class="range-slider">
-            <h6 class="rangeValues"></h6>
             <input value="0" min="0" max="1440" step="30" type="range">
             <input value="480" min="0" max="1440" step="30" type="range">
+            <h6 class="rangeValues"></h6>
           </section>
         </div>
 
-        <div class="rec_tab_container">
+        <div class="rec_tab_container semi_transparent_box">
           <button class="rec_tab rec_tab_left" v-on:click="toggle_to_group(false)" 
           v-bind:class="{ selected_tab: !toggle_groups }">Personal</button>
           <button class="rec_tab rec_tab_right" v-on:click="toggle_to_group(true)"
           v-bind:class="{ selected_tab: toggle_groups }">Group</button>
         </div>  
         <!-------------------------- PERSONAL RECOMMENDATION CONTAINER -------------------------->
-        <div class="container padded rec_window" v-if="!toggle_groups">
+        <div class="container padded rec_window semi_transparent_box" v-if="!toggle_groups">
           <div>
             <button class="btn rounded" v-on:click="surf()"><h5>Personal recommendation</h5></button>
           </div>
-          <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
+          <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
 
           <div v-if="best_spot_1" class="spot_card" v-on:click="confirm_surf_session(1)">
             <div class="spot_image" v-bind:style="best_spot_1.style"> 
@@ -83,7 +83,7 @@
 
         </div>
         <!-------------------------- GROUP RECOMMENDATION CONTAINER -------------------------->
-        <div class="navy padded rec_window" v-if="toggle_groups && current_user">
+        <div class="navy padded rec_window semi_transparent_box" v-if="toggle_groups && current_user">
           <div>
             <button class="btn rounded" v-on:click="surf()"><h5>Group recommendation</h5></button>
             <select class="third group_option" v-model="selected_group">
@@ -93,6 +93,7 @@
             </select>
             <span v-if="display_group_alert" class="third"> <---- Select Group </span>
           </div>
+          <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
           <div v-if="best_spot_1" class="spot_card" v-on:click="confirm_surf_session(1)">
             <div class="spot_image" v-bind:style="best_spot_1.style"> 
               <label class="spot_time"> ${best_spot_1.time} </label>
@@ -129,9 +130,9 @@
       </div>
 
       <!-------------------------- YOUR SURF SESSIONS CONTAINER -------------------------->
-      <div class="container padded third">
+      <div class="container padded third semi_transparent_box">
         <div class="session_container padded">
-          <h5>Your Surf Sessions</h5>
+          <h5 class="center">Your Surf Sessions</h5>
           <div class="silver padded tags tag_container">
               <span v-for="(session, index) in user_data.surf_sessions" class="tags teal" v-on:click="view_surf_session(session)"> ${session.substring(0, session.lastIndexOf(','))}
                 <i class="fa fa-trash session_delete" v-on:click="delete_surf_session(index)"></i> 
@@ -141,7 +142,7 @@
       </div>
 
       <div class="container center padded threequarters">
-        <div class="map_holder padded">
+        <div class="padded semi_transparent_box">
           <div id="map"></div>
         </div>
       </div>

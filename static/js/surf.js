@@ -170,6 +170,7 @@ var app = function() {
     }
 
     self.view_surf_session = async function(message) {
+        clearMarkers();
         setMarker(message);
     }
 
