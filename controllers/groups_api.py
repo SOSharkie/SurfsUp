@@ -74,7 +74,7 @@ def invite_member():
 
 def add_to_group():
     r = db(db.group_data.id == request.vars.group_id).select().first()
-    u = db(db.user_data.id == request.vars.user_id).select().first()
+    u = db(db.user_data.user_id == request.vars.user_id).select().first()
     if r.members is not None:
         r.members.append(request.vars.guest)
         r.update_record()

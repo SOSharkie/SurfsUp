@@ -15,6 +15,7 @@ var app = function() {
 
             if (self.vue.logged_in){
                 self.get_user_data(self.vue.current_user.id);
+                self.get_groups();
             }
             $("#vue-div").show();
         })
@@ -69,6 +70,14 @@ var app = function() {
 
     //creates 3 different recommendations for surf
     self.surf = async function(){
+        if (self.vue.toggle_groups){
+            if (!self.vue.selected_group){
+                self.vue.display_group_alert = true;
+                setTimeout(function(){self.vue.display_group_alert = false;}, 3000);
+                return;
+            }
+        }
+        
         self.vue.calculating = true;
         var skill_level = self.vue.user_data.skill_level;
         var startTime = self.start_hour;
@@ -156,6 +165,17 @@ var app = function() {
         
     }
 
+    self.get_groups = function(){
+        $.post(get_groups_url, {
+                group_owner: self.vue.current_user.email,
+                user_id: self.vue.current_user.id
+            }, function(data){
+                self.vue.groups = data.groups;
+                console.log("got group data", self.vue.groups);
+            }
+        );
+    };
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -176,7 +196,11 @@ var app = function() {
             users: [],
             current_user: null,
             logged_in: false,
-            calculating: false
+            calculating: false,
+            toggle_groups: false,
+            groups: [],
+            selected_group: null,
+            display_group_alert: false
         },
         methods: {
             get_users: self.get_users,
@@ -184,7 +208,14 @@ var app = function() {
             get_user_data: self.get_user_data,
             confirm_surf_session: self.confirm_surf_session,
             delete_surf_session: self.delete_surf_session,
-            view_surf_session: self.view_surf_session
+            view_surf_session: self.view_surf_session,
+            get_groups: self.get_groups,
+            toggle_to_group: function(choice){
+                this.best_spot_message = "";
+                this.best_spot_message2 = "";
+                this.best_spot_message3 = "";
+                this.toggle_groups = choice;
+            }
         }
 
     });

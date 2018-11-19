@@ -170,7 +170,6 @@
 				<div class="third navy group_container">
 					<h6 class="your_groups">Your groups</h6>
 
-					<!-- Code to display the images -->
 					<div v-if="groups">
 						<ul class="container">
 							<li v-for="(group, index) in groups">
@@ -190,10 +189,6 @@
 			<div v-if="!logged_in">
 				<h3>Log in to use groups</h3>
 			</div>
-
-			<!-- <button class="btn rounded" v-on:click="get_groups()">
-				Get group data
-			</button> -->
 
 		</div>
     

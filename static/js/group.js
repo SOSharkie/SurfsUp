@@ -206,7 +206,7 @@ var app = function() {
             },
             toggle_alert: function(){
                 this.display_alert = true;
-                setTimeout(function(){self.vue.display_alert = false;}, 3500);
+                setTimeout(function(){self.vue.display_alert = false;}, 3000);
             },
             add_group: function(){
                 this.is_modifiable = true;

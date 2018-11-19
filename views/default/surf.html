@@ -7,6 +7,7 @@
     var user_data_url = "{{=URL('user_api', 'get_user_data', user_signature=True)}}";
     var add_surf_session_url = "{{=URL('user_api', 'add_surf_session', user_signature=True)}}";
     var delete_surf_session_url = "{{=URL('user_api', 'delete_surf_session', user_signature=True)}}";
+    var get_groups_url = "{{=URL('groups_api', 'get_groups', user_signature=True)}}";
 </script> 
 <link href="{{=URL('static','css/surf.css')}}" rel="stylesheet" type="text/css"/>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -23,6 +24,7 @@
 
   		<div class="container padded twothirds">
 
+        <!---------------------- TIME WINDOW CONTAINER ---------------------->
         <div class="blue padded surf_window">
           <h4>Set the time window you would like to surf:</h4>
           <section class="range-slider">
@@ -32,9 +34,38 @@
           </section>
         </div>
 
-        <div class="navy padded rec_window">
+        <div class="navy rec_tab_container">
+          <button class="rec_tab rec_tab_left" v-on:click="toggle_to_group(false)" 
+          v-bind:class="{ selected_tab: !toggle_groups }">Personal</button>
+          <button class="rec_tab rec_tab_right" v-on:click="toggle_to_group(true)"
+          v-bind:class="{ selected_tab: toggle_groups }">Group</button>
+        </div>  
+        <!-------------------------- PERSONAL RECOMMENDATION CONTAINER -------------------------->
+        <div class="navy padded rec_window" v-if="!toggle_groups">
           <div>
-            <button class="btn rounded" v-on:click="surf()"><h5>Request a recommendation!</h5></button>
+            <button class="btn rounded" v-on:click="surf()"><h5>Personal recommendation</h5></button>
+          </div>
+          <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
+          <h5 v-if="best_spot_message" class="surf_rec" v-on:click="confirm_surf_session(1)">
+            Best Surf: ${best_spot_message}</h5>
+          <h5 v-if="best_spot_message2" class="surf_rec" v-on:click="confirm_surf_session(2)">
+            2nd Best Surf: ${best_spot_message2}</h5>
+          <h5 v-if="best_spot_message3" class="surf_rec" v-on:click="confirm_surf_session(3)">
+            3rd Best Surf: ${best_spot_message3}</h5>
+          <h5 v-if="!best_spot_message" class="surf_rec">Best Surf:</h5>
+          <h5 v-if="!best_spot_message2" class="surf_rec">2nd Best Surf:</h5>
+          <h5 v-if="!best_spot_message3" class="surf_rec">3rd Best Surf:</h5>
+        </div>
+        <!-------------------------- GROUP RECOMMENDATION CONTAINER -------------------------->
+        <div class="navy padded rec_window" v-if="toggle_groups && current_user">
+          <div>
+            <button class="btn rounded" v-on:click="surf()"><h5>Group recommendation</h5></button>
+            <select class="third group_option" v-model="selected_group">
+              <option v-for="(group, index) in groups">
+                ${group.group_name}
+              </option>
+            </select>
+            <span v-if="display_group_alert" class="third"> <---- Select Group </span>
           </div>
           <div v-if="calculating" class="progress fill"><div class="indeterminate"></div></div>
           <h5 v-if="best_spot_message" class="surf_rec" v-on:click="confirm_surf_session(1)">
@@ -49,6 +80,7 @@
         </div>
       </div>
 
+      <!-------------------------- YOUR SURF SESSIONS CONTAINER -------------------------->
       <div class="container padded third">
         <div class="green padded">
           <h5>Your Surf Sessions</h5>
