@@ -157,6 +157,10 @@ var app = function() {
         this.best_spot_message2 = createSpotMessage(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
         this.best_spot_message3 = createSpotMessage(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
 
+        self.vue.best_spot_1 = createSpotObject(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0]);
+        self.vue.best_spot_2 = createSpotObject(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
+        self.vue.best_spot_3 = createSpotObject(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
+
         self.vue.calculating = false;
 
         //add markers to each spot
@@ -193,6 +197,9 @@ var app = function() {
             best_spot_message: "",
             best_spot_message2: "",
             best_spot_message3: "",
+            best_spot_1: null,
+            best_spot_2: null,
+            best_spot_3: null,
             markers: [],
             user_data: [],
             users: [],
@@ -214,8 +221,11 @@ var app = function() {
             get_groups: self.get_groups,
             toggle_to_group: function(choice){
                 this.best_spot_message = "";
+                this.best_spot_1 = null;
                 this.best_spot_message2 = "";
+                this.best_spot_2 = null;
                 this.best_spot_message3 = "";
+                this.best_spot_3 = null;
                 this.toggle_groups = choice;
             }
         }
@@ -402,6 +412,51 @@ function createSpotMessage(spotName, time, waveSize, tideHeight){
     var message = spotName + ", " + todayTmrw + " @ " + time + ampm + ", Waves: " + Math.round(waveSize * 100)/100
         + " ft," + " Tide: " + Math.round(tideHeight * 100)/100 + " ft ";
     return message;
+}
+
+function createSpotObject(spotName, time, waveSize, tideHeight){
+    var ampm = "AM";
+    var todayTmrw = "Today";
+    if(time >= 12){
+        if(time < 24){
+            ampm = "PM";
+            time -= 12;
+        }
+        else if(time < 36){
+            time -=24;
+            todayTmrw = "Tomorrow";
+        }
+        else{
+            ampm = "PM";
+            todayTmrw = "Tomorrow";
+            time -= 36;
+        }
+        if(time == 0){
+            time = 12;
+        }
+        if(time == 12){
+            ampm = "PM";
+        }
+    }
+    var timeString = todayTmrw + " @ " + time + ampm;
+    var waveString = Math.round(waveSize * 100)/100+ " ft";
+    var tideString = Math.round(tideHeight * 100)/100 + " ft ";
+
+    var spotObj = {
+        style: {
+            backgroundImage: getSpotPictureUrl(spotName)
+        },
+        spot: spotName,
+        wave_height: waveString,
+        tide: tideString,
+        time: timeString
+    };
+    return spotObj;
+}
+
+function getSpotPictureUrl(spotName){
+    var spot = spotName.replace(/\s+/g, '');
+    return 'url(../static/images/' + spot.toLowerCase() + '.jpg)'
 }
 
 function getVals(){
