@@ -456,8 +456,13 @@ function createSpotObject(spotName, time, waveSize, tideHeight){
 }
 
 function getSpotPictureUrl(spotName){
-    var spot = spotName.replace(/\s+/g, '');
-    return 'url(../static/images/' + spot.toLowerCase() + '.jpg)'
+    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 
+    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
+    var spot = spotName.replace(/\s+/g, '').toLowerCase();
+    if (spotPics.includes(spot)){
+        return 'url(../static/images/' + spot + '.jpg)';
+    }
+    return 'url(../static/images/generic_spot.jpg)';
 }
 
 function getVals(){

@@ -41,50 +41,56 @@
           v-bind:class="{ selected_tab: toggle_groups }">Group</button>
         </div>  
         <!-------------------------- PERSONAL RECOMMENDATION CONTAINER -------------------------->
-        <div class="container padded rec_window semi_transparent_box" v-if="!toggle_groups">
-          <div>
+        <div class="container padded rec_window" v-if="!toggle_groups">
+          <div class="semi_transparent_box padded">
             <button class="btn rounded" v-on:click="surf()"><h5>Personal recommendation</h5></button>
-          </div>
-          <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
-
-          <div v-if="best_spot_1" class="spot_card" v-on:click="confirm_surf_session(1)">
-            <div class="spot_image" v-bind:style="best_spot_1.style"> 
-              <label class="spot_time"> ${best_spot_1.time} </label>
-            </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_1.wave_height}</span> <br>
-              <span>Tide: ${best_spot_1.tide}</span> 
-            </div>
+            <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
           </div>
 
-          <div v-if="best_spot_2" class="spot_card" v-on:click="confirm_surf_session(2)">
-            <div class="spot_image" v-bind:style="best_spot_2.style"> 
-              <label class="spot_time"> ${best_spot_2.time} </label>
+          <transition name="slide-fade">
+          <div v-if="best_spot_1 && best_spot_2 && best_spot_3" class="semi_transparent_box padded slide_box">
+            <div class="spot_card" v-on:click="confirm_surf_session(1)">
+              <div class="spot_image" v-bind:style="best_spot_1.style"> 
+                <label class="left spot_rank"> Best </label>
+                <label class="right spot_time"> ${best_spot_1.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_1.wave_height}</span> <br>
+                <span>Tide: ${best_spot_1.tide}</span> 
+              </div>
             </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_2.wave_height}</span> <br>
-              <span>Tide: ${best_spot_2.tide}</span> 
+
+            <div class="spot_card" v-on:click="confirm_surf_session(2)">
+              <div class="spot_image" v-bind:style="best_spot_2.style"> 
+                <label class="left spot_rank"> 2nd Best </label>
+                <label class="right spot_time"> ${best_spot_2.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_2.wave_height}</span> <br>
+                <span>Tide: ${best_spot_2.tide}</span> 
+              </div>
+            </div>
+
+            <div class="spot_card" v-on:click="confirm_surf_session(3)">
+              <div class="spot_image" v-bind:style="best_spot_3.style"> 
+                <label class="left spot_rank"> 3rd Best </label>
+                <label class="right spot_time"> ${best_spot_3.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_3.wave_height}</span> <br>
+                <span>Tide: ${best_spot_3.tide}</span> 
+              </div>
             </div>
           </div>
-
-          <div v-if="best_spot_3" class="spot_card" v-on:click="confirm_surf_session(3)">
-            <div class="spot_image" v-bind:style="best_spot_3.style"> 
-              <label class="spot_time"> ${best_spot_3.time} </label>
-            </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_3.wave_height}</span> <br>
-              <span>Tide: ${best_spot_3.tide}</span> 
-            </div>
-          </div>
-
-
+          </transition>
         </div>
+
         <!-------------------------- GROUP RECOMMENDATION CONTAINER -------------------------->
-        <div class="navy padded rec_window semi_transparent_box" v-if="toggle_groups && current_user">
-          <div>
+        <div class="padded rec_window" v-if="toggle_groups && current_user">
+          <div class="semi_transparent_box padded">
             <button class="btn rounded" v-on:click="surf()"><h5>Group recommendation</h5></button>
             <select class="third group_option" v-model="selected_group">
               <option v-for="(group, index) in groups">
@@ -92,41 +98,50 @@
               </option>
             </select>
             <span v-if="display_group_alert" class="third"> <---- Select Group </span>
-          </div>
-          <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
-          <div v-if="best_spot_1" class="spot_card" v-on:click="confirm_surf_session(1)">
-            <div class="spot_image" v-bind:style="best_spot_1.style"> 
-              <label class="spot_time"> ${best_spot_1.time} </label>
-            </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_1.wave_height}</span> <br>
-              <span>Tide: ${best_spot_1.tide}</span> 
-            </div>
+            <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
           </div>
 
-          <div v-if="best_spot_2" class="spot_card" v-on:click="confirm_surf_session(2)">
-            <div class="spot_image" v-bind:style="best_spot_2.style"> 
-              <label class="spot_time"> ${best_spot_2.time} </label>
+          <transition name="slide-fade">
+          <div v-if="best_spot_1 && best_spot_2 && best_spot_3" class="semi_transparent_box padded slide_box">
+            <div class="spot_card" v-on:click="confirm_surf_session(1)">
+              <div class="spot_image" v-bind:style="best_spot_1.style"> 
+                <label class="left spot_rank"> Best </label>
+                <label class="right spot_time"> ${best_spot_1.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_1.wave_height}</span> <br>
+                <span>Tide: ${best_spot_1.tide}</span> 
+              </div>
             </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_2.wave_height}</span> <br>
-              <span>Tide: ${best_spot_2.tide}</span> 
-            </div>
-          </div>
 
-          <div v-if="best_spot_3" class="spot_card" v-on:click="confirm_surf_session(3)">
-            <div class="spot_image" v-bind:style="best_spot_3.style"> 
-              <label class="spot_time"> ${best_spot_3.time} </label>
+            <div class="spot_card" v-on:click="confirm_surf_session(2)">
+              <div class="spot_image" v-bind:style="best_spot_2.style"> 
+                <label class="left spot_rank"> 2nd Best </label>
+                <label class="right spot_time"> ${best_spot_2.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_2.wave_height}</span> <br>
+                <span>Tide: ${best_spot_2.tide}</span> 
+              </div>
             </div>
-            <div class="spot_container">
-              <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 
-              <span>Wave Height: ${best_spot_3.wave_height}</span> <br>
-              <span>Tide: ${best_spot_3.tide}</span> 
+
+            <div class="spot_card" v-on:click="confirm_surf_session(3)">
+              <div class="spot_image" v-bind:style="best_spot_3.style"> 
+                <label class="left spot_rank"> 3rd Best </label>
+                <label class="right spot_time"> ${best_spot_3.time} </label>
+              </div>
+              <div class="spot_container">
+                <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 
+                <span>Wave Height: ${best_spot_3.wave_height}</span> <br>
+                <span>Tide: ${best_spot_3.tide}</span> 
+              </div>
             </div>
           </div>
         </div>
+        </transition>
+
       </div>
 
       <!-------------------------- YOUR SURF SESSIONS CONTAINER -------------------------->
@@ -134,8 +149,8 @@
         <div class="session_container padded">
           <h5 class="center">Your Surf Sessions</h5>
           <div class="silver padded tags tag_container">
-              <span v-for="(session, index) in user_data.surf_sessions" class="tags teal" v-on:click="view_surf_session(session)"> ${session.substring(0, session.lastIndexOf(','))}
-                <i class="fa fa-trash session_delete" v-on:click="delete_surf_session(index)"></i> 
+              <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)"> ${session.substring(0, session.lastIndexOf(','))}
+                <i class="fa fa-trash session_delete" v-on:click.stop="delete_surf_session(index)"></i> 
               </span>
           </div>
         </div>
