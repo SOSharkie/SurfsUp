@@ -18,6 +18,19 @@ var app = function() {
         self.vue.page = new_page;
     }
 
+    self.set_current_slide = function(slide) {
+        console.log("set current slide to ", slide);
+        // if (slide == 1){
+
+        // } else if (slide == 2){
+
+        // } else {
+        //     self.vue.slide_style = {
+        //         backgroundImage: 'url(../static/images/surfer_3.jpg)'
+        //     };
+        // }
+    }
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -25,9 +38,14 @@ var app = function() {
         unsafeDelimiters: ['!{', '}'],
         data: {
             page: 'homepage',
+            current_slide: 1,
+            slide_style: {
+                 backgroundImage: 'url(../static/images/surfer_1.jpg)'
+            }
         },
         methods: {
-            change_page: self.change_page
+            change_page: self.change_page,
+            set_current_slide: self.set_current_slide
         }
 
     });

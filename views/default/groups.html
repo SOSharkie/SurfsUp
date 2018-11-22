@@ -32,10 +32,10 @@
 
 			<div class="container" v-if="logged_in">
 
-				<!-- Before adding a group -->
-				<div class="container half">
-					<div class="semi_transparent_box group_container" v-if="!is_making_group">
-						<h6>Create a new group to surf with</h6>
+				<div class="half">
+					<!-- Before adding a group -->
+					<div class="semi_transparent_box add_group_container" v-if="!is_making_group">
+						<h4>Create a new group to surf with</h4>
 						<button class="btn rounded" v-on:click="add_group()">
 						<i class="fa fa-plus"></i>
 						</button>
@@ -43,107 +43,117 @@
 
 					<!-- While making a group you own-->
 					<div class="semi_transparent_box group_container" v-if="is_making_group & is_modifiable">
-						<div class="container">
-							<label class="quarter">Group name: </label>
-							<div class="half">
-								<input type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()">
+						<div class="name_container">
+							<div class="center">
+								<h3 class="group_name" v-if="!editing_group_name"> ${group_name} </h3>
+								<i class="far fa-edit" v-if="!editing_group_name" v-on:click="edit_group_name()"></i>
+								<input class="edit_group_name" type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()" v-if="editing_group_name">
 							</div>
 						</div>
-
-						<br>
-
-						<div class="container" v-if="current_group">
-							<label class="quarter">Group owner: </label>
-							<div class="half">
-								<p>${current_group.group_owner}</p>
+						<div class="spot_and_members">
+							<div class="group_left left">
+								<h5 class="center"> Group Session </h5>
+								<div class="spot_card_group">
+					              <div class="spot_image" v-bind:style="group_spot.style"> 
+					                <label class="right spot_time"> Today @ 1:30PM </label>
+					              </div>
+					              <div class="spot_container">
+					                <h4 class="spot_title"><b>Pleasure Point</b></h4> 
+					                <span>Wave Height: 4.5ft</span> <br>
+					                <span>Tide: 1.2ft</span> 
+					              </div>
+					            </div>
+							</div>
+							<div class="group_right right">
+								<h5 class="center"> Members </h5>
+								<label class="left">${current_group.group_owner} (Owner)</label> <br>
+								<div class="left member" v-for="(member, index) in current_group.members">
+									<label class="left">${member}</label> <br>
+								</div>
+								<div class="center" v-if="current_group">
+									<h6 class="center">Invite members:</h6>
+									<select class="threequarters" v-model="invitee">
+										<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
+											${user.email}
+										</option>
+									</select>
+									<button class="btn rounded" v-on:click="invite_member(), toggle_alert()">
+										<i class="fas fa-user-plus"></i>
+									</button>
+								</div>
+								<div class="alert" v-if="display_alert">
+									<span class="closebtn" v-on:click="toggle_alert()">&times; Invited user</span> 
+								</div>
 							</div>
 						</div>
-
 						<br>
-
-						<div class="container" v-if="current_group">
-							<label class="quarter">Members: </label>
-							<div class="half" v-for="(member, index) in current_group.members">
-								<p>${member}</p>
-							</div>
-						</div>
-
-						<br>
-
-						<div class="container" v-if="current_group">
-							<label class="quarter">Invite members:</label>
-							<select class="fill half" v-model="invitee">
-								<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
-									${user.email}
-								</option>
-							</select>
-							<button class="btn rounded" v-on:click="invite_member(), toggle_alert()">
-								<i class="fas fa-user-plus"></i>
-							</button>
-						</div>
-
-						<br>
-
-						<!-- <div class="alert">
-							<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-							Invited user
-						</div> -->
-
-						<div class="alert" v-if="display_alert">
-							<span class="closebtn" v-on:click="toggle_alert()">&times;</span> 
-							Invited user
-						</div>
-
-						<br>
-						
-						<button class="btn rounded" v-on:click="toggle_making_group()">
+						<button class="btn rounded done_button" v-on:click="toggle_making_group()">
 							Done
 						</button>
-						<button class="btn rounded right" v-on:click="delete_group(), toggle_making_group()">
+						<button class="btn rounded right delete_button" v-on:click="delete_group(), toggle_making_group()">
 							Delete Group
 						</button>
 					</div>
 
-					<!-- While making a group you don't own-->
+					<!-- While viewing a group you don't own-->
 					<div class="semi_transparent_box group_container" v-if="is_making_group & !is_modifiable">
-						<div class="container">
-							<label class="quarter">Group name: </label>
-							<div class="half">
-								<label>${group_name}</label>
+						<div class="name_container">
+							<div class="center">
+								<h3 class="group_name" v-if="!editing_group_name"> ${group_name} </h3>
 							</div>
 						</div>
-
-						<br>
-
-						<div class="container" v-if="current_group">
-							<label class="quarter">Group owner: </label>
-							<div class="half">
-								<p>${current_group.group_owner}</p>
+						<div v-if="current_group" class="spot_and_members">
+							<div class="group_left left">
+								<h5 class="center"> Group Session </h5>
+								<div class="spot_card_group">
+					              <div class="spot_image" v-bind:style="group_spot.style"> 
+					                <label class="right spot_time"> Today @ 1:30PM </label>
+					              </div>
+					              <div class="spot_container">
+					                <h4 class="spot_title"><b>Pleasure Point</b></h4> 
+					                <span>Wave Height: 4.5ft</span> <br>
+					                <span>Tide: 1.2ft</span> 
+					              </div>
+					            </div>
+							</div>
+							<div class="group_right right">
+								<h5 class="center"> Members </h5>
+								<label class="left">${current_group.group_owner} (Owner)</label>
+								<div class="left member" v-for="(member, index) in current_group.members">
+									<label class="left">${member}</label>
+								</div>
 							</div>
 						</div>
-
 						<br>
-
-						<div class="container" v-if="current_group">
-							<label class="quarter">Members: </label>
-							<div class="half" v-for="(member, index) in current_group.members">
-								<p>
-									${member}
-								</p>
-							</div>
-						</div>
-
-						<br>
-						
-						<button class="btn rounded" v-on:click="toggle_making_group()">
+						<button class="btn rounded done_button" v-on:click="toggle_making_group()">
 							Done
 						</button>
-						<button class="btn rounded right" v-on:click="leave_group(), toggle_making_group()">
+						<button class="btn rounded right done_button" v-on:click="leave_group(), toggle_making_group()">
 							Leave group
 						</button>
 					</div>
 
-					<div v-if="user_data" class="semi_transparent_box group_container">
+				</div>
+				<div class="half">
+					<!-- Group List Container -->
+					<div class="semi_transparent_box group_list_container">
+						<h3 class="your_groups">Your groups</h3>
+						<ul v-if="groups" class="">
+							<li v-for="(group, index) in groups">
+								<div class="threequarters">
+									<button v-on:click="get_group(index), making_group()" v-bind:class="{ active_group: is_active_group(index) }">
+										${group.group_name}
+										<span v-if="group.group_owner == current_user.email"> (Owner) </span>
+									</button>
+								</div>
+							</li>
+						</ul>
+						<h4 class="center" v-if="groups && groups.length == 0"> You have no groups, try making one! </h4>
+					</div>
+
+					<!-- Notifications container -->
+					<div v-if="user_data" class="semi_transparent_box notification_container">
+						<h3 class="your_groups">Notifications</h3>
 						<button class="btn rounded" v-on:click="toggle_is_nfc()" v-if="user_data.notifications">
 							<i class="far fa-bell"></i> ${user_data.notifications.length}
 						</button>
@@ -164,23 +174,6 @@
 								Owner: ${nfc.group_owner}
 							</button>
 						</div>
-					</div>
-				</div>
-
-				<div class="third semi_transparent_box group_container">
-					<h6 class="your_groups">Your groups</h6>
-
-					<div v-if="groups">
-						<ul class="container">
-							<li v-for="(group, index) in groups">
-								<div class="group_button">
-									<button v-on:click="get_group(index), making_group()">
-										${group.group_name}
-									</button>
-								</div>
-							</li>
-						</ul>
-						<h4 v-if="groups.length == 0"> You have no groups, try making one! </h4>
 					</div>
 				</div>
 

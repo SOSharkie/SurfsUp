@@ -5,11 +5,12 @@
 <script>
     var my_url = "{{=URL('api', 'my_method')}}";
 </script>
+<link href="{{=URL('static','css/homepage.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
 
 <div class="main_content">
 
-	<div id="vue-div" class="homepage">
+	<div id="vue-div" class="homepage" v-bind:style="slide_style">
 
   	<div class="container padded">
 
@@ -24,6 +25,14 @@
           <h3 class="center"> Create and join groups</h3>
         </div>
       </div>
+<!--       <a class="prev left" onclick="">&#10094;</a>
+      <a class="next right" onclick="">&#10095;</a>
+
+      <div class="dot_container center">
+        <span class="dot" v-on:click="set_current_slide(1)"></span> 
+        <span class="dot" v-on:click="set_current_slide(2)"></span> 
+        <span class="dot" v-on:click="set_current_slide(3)"></span> 
+      </div> -->
 
 		</div>
     

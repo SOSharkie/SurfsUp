@@ -85,13 +85,11 @@ var app = function() {
 
     self.change_group_name = function(){
         $.post(change_group_name_url, {
-                //group_owner: self.vue.current_user.email,
                 group_id: self.vue.groups[self.vue.group_idx].id,
                 group_name: self.vue.group_name,
             }, function(){
-                //console.log("changed group name to: ", self.vue.group_name);
                 self.get_groups();
-                //self.vue.group_name = "your group name";
+                self.vue.editing_group_name = false;
             }
         );
     };
@@ -180,6 +178,7 @@ var app = function() {
         data: {
             is_making_group: false,
             group_name: 'new group',
+            editing_group_name: false,
             logged_in: false,
             current_user: null,
             current_group: null,
@@ -192,11 +191,21 @@ var app = function() {
             display_alert: false,
             users: [],
             groups: [],
-            notifications: []
+            notifications: [],
+            group_spot: {
+                style: {
+                    backgroundImage: 'url(../static/images/generic_spot.jpg)'
+                },
+                spot: "Pleasure Point",
+                wave_height: "4.6ft",
+                tide: "1.2ft",
+                time: "Today @ 1:30PM"
+            }
         },
         methods: {
             toggle_making_group: function(){
                 this.is_making_group = !this.is_making_group;
+                this.current_group = null;
             },
             making_group: function(){
                 this.is_making_group = true;
@@ -220,6 +229,17 @@ var app = function() {
                     }
                 );
                 this.group_idx = this.groups.length;
+            },
+            edit_group_name: function() {
+                this.editing_group_name = true;
+            },
+            is_active_group: function(index) {
+                if (this.current_group){
+                    if (this.groups[index].id == this.current_group.id) {
+                        return true;
+                    }
+                }
+                return false;
             },
             get_groups: self.get_groups,
             get_group: self.get_group,
