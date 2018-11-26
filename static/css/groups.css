@@ -74,6 +74,23 @@
 	margin: 1em !important;
 }
 
+.remove_container {
+	display: inline-block;
+	width: 98%;
+	text-align: center;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+.remove_session {
+	background-color: darkred;
+	text-align: center;
+	vertical-align: middle;
+	width: 50%;
+	box-shadow: 0 2px 5px 0px rgba(0,0,0,0.5);
+	border-color: darkred;
+}
+
 .delete_button {
 	margin: 1em !important;
 	background-color: darkred; 

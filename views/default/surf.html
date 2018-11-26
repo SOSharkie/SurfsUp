@@ -54,6 +54,9 @@
               <div class="spot_image" v-bind:style="best_spot_1.style"> 
                 <label class="left spot_rank"> Best </label>
                 <label class="right spot_time"> ${best_spot_1.time} </label>
+                <div class="overlay" v-if="best_spot_1.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
@@ -66,6 +69,9 @@
               <div class="spot_image" v-bind:style="best_spot_2.style"> 
                 <label class="left spot_rank"> 2nd Best </label>
                 <label class="right spot_time"> ${best_spot_2.time} </label>
+                <div class="overlay" v-if="best_spot_2.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
@@ -78,6 +84,9 @@
               <div class="spot_image" v-bind:style="best_spot_3.style"> 
                 <label class="left spot_rank"> 3rd Best </label>
                 <label class="right spot_time"> ${best_spot_3.time} </label>
+                <div class="overlay" v-if="best_spot_3.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 
@@ -108,6 +117,9 @@
               <div class="spot_image" v-bind:style="best_spot_1.style"> 
                 <label class="left spot_rank"> Best </label>
                 <label class="right spot_time"> ${best_spot_1.time} </label>
+                <div class="overlay" v-if="best_spot_1.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_1.spot}</b></h4> 
@@ -120,6 +132,9 @@
               <div class="spot_image" v-bind:style="best_spot_2.style"> 
                 <label class="left spot_rank"> 2nd Best </label>
                 <label class="right spot_time"> ${best_spot_2.time} </label>
+                <div class="overlay" v-if="best_spot_2.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_2.spot}</b></h4> 
@@ -132,6 +147,9 @@
               <div class="spot_image" v-bind:style="best_spot_3.style"> 
                 <label class="left spot_rank"> 3rd Best </label>
                 <label class="right spot_time"> ${best_spot_3.time} </label>
+                <div class="overlay" v-if="best_spot_3.clicked_spot">
+                  <h5 class="overlay_text">Selected!</h5>
+                </div>
               </div>
               <div class="spot_container">
                 <h4 class="spot_title"><b>${best_spot_3.spot}</b></h4> 

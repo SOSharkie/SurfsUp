@@ -18,6 +18,7 @@
 	var add_to_group_url = "{{=URL('groups_api', 'add_to_group', user_signature=True)}}";
 	var add_user_data_url = "{{=URL('user_api', 'add_user_data', user_signature=True)}}";
 	var leave_group_url = "{{=URL('groups_api', 'leave_group', user_signature=True)}}";
+	var edit_group_session_url = "{{=URL('groups_api', 'edit_group_session', user_signature=True)}}";
 </script>
 <link href="{{=URL('static','css/groups.css')}}" rel="stylesheet" type="text/css"/>
 {{end}}
@@ -63,6 +64,7 @@
 					                <span>${group_spot.tide}</span> 
 					              </div>
 					            </div>
+					            <div class="remove_container"><button class="remove_session center" v-on:click="remove_group_session()"> Remove Session</button></div>
 							</div>
 							<div class="group_right right">
 								<h5 class="center"> Members </h5>

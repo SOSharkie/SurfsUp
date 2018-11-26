@@ -191,6 +191,18 @@ var app = function() {
         );
     };
 
+    self.remove_group_session = function(){
+        $.post(edit_group_session_url,
+            {
+                group_id: self.vue.current_group.id,
+                session: null
+            }, 
+            function () {
+                self.set_group_spot(null);
+            }
+        );
+    }
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -272,6 +284,7 @@ var app = function() {
             remove_notification: self.remove_notification,
             check_user: self.check_user,
             leave_group: self.leave_group,
+            remove_group_session: self.remove_group_session
         }
 
     });

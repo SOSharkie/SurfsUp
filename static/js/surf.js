@@ -7,7 +7,6 @@ var app = function() {
     Vue.config.silent = false; // show all warnings
 
     self.get_users = function () {
-
         $.getJSON(get_users_url, function (data) {
             self.vue.users = data.users;
             self.vue.current_user = data.current_user;
@@ -33,17 +32,25 @@ var app = function() {
     };
 
     self.confirm_surf_session = function(session_choice) {
-        var spot = self.vue.best_spot_message;
-        if (session_choice == 2){
+        var spot;
+        if (session_choice == 1){
+            spot = self.vue.best_spot_message;
+            self.vue.best_spot_1.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_1.clicked_spot = false;}, 2000);
+        } else if (session_choice == 2){
             spot = self.vue.best_spot_message2
+            self.vue.best_spot_2.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_2.clicked_spot = false;}, 2000);
         } else if (session_choice == 3){
             spot = self.vue.best_spot_message3
+            self.vue.best_spot_3.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_3.clicked_spot = false;}, 2000);
         }
 
         $.post(add_surf_session_url,
             {
                 user_id: self.vue.current_user.id,
-                surf_session: spot
+                session: spot
             }, 
             function () {
                 if (self.vue.user_data.surf_sessions == null){
@@ -51,17 +58,25 @@ var app = function() {
                 } else {
                     self.vue.user_data.surf_sessions.push(spot);
                 }
-                console.log("added surf session", self.vue.user_data);
+                console.log("added surf session", spot);
             }
         );
     }
 
     self.confirm_group_session = function(session_choice){
-        var spot = self.vue.best_spot_message;
-        if (session_choice == 2){
+        var spot;
+        if (session_choice == 1){
+            spot = self.vue.best_spot_message;
+            self.vue.best_spot_1.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_1.clicked_spot = false;}, 2000);
+        } else if (session_choice == 2){
             spot = self.vue.best_spot_message2
+            self.vue.best_spot_2.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_2.clicked_spot = false;}, 2000);
         } else if (session_choice == 3){
             spot = self.vue.best_spot_message3
+            self.vue.best_spot_3.clicked_spot = true;
+            setTimeout(function(){self.vue.best_spot_3.clicked_spot = false;}, 2000);
         }
         var selected_group_id = (self.vue.groups.find(
             group => group.group_name == self.vue.selected_group)).id;
