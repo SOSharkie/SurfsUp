@@ -299,7 +299,7 @@ var app = function() {
 var APP = null;
 
 function getSpotPictureUrl(spotName){
-    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 
+    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 'manresa', 'santamarias',
     'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
     var spot = spotName.replace(/\s+/g, '').toLowerCase();
     if (spotPics.includes(spot)){

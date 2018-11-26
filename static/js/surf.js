@@ -487,13 +487,14 @@ function createSpotObject(spotName, time, waveSize, tideHeight){
         spot: spotName,
         wave_height: waveString,
         tide: tideString,
-        time: timeString
+        time: timeString,
+        clicked_spot: false
     };
     return spotObj;
 }
 
 function getSpotPictureUrl(spotName){
-    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 
+    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 'manresa', 'santamarias',
     'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
     var spot = spotName.replace(/\s+/g, '').toLowerCase();
     if (spotPics.includes(spot)){
