@@ -25,6 +25,7 @@ db.define_table('group_data',
                 Field('group_owner', default=get_user_email()),
                 Field('group_name', 'string'),
                 Field('members', 'list:string'),
+                Field('surf_session', 'string')
                 )
 
 #db.users.skill_level.requires=IS_IN_SET(('Beginner', 'Intermediate', 'Advanced', 'Expert'))

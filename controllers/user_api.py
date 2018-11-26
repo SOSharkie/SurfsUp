@@ -85,7 +85,6 @@ def add_user_data():
 # Edit user data
 def edit_user_data():
 	row = db(db.user_data.user_id == request.vars.user_id).select().first()
-	print("new_board", request.vars.new_board)
 	if request.vars.new_board == 'true':
 		if row.boards is not None:
 			row.boards.append(request.vars.board)

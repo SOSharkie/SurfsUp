@@ -43,7 +43,7 @@ var app = function() {
         $.post(add_surf_session_url,
             {
                 user_id: self.vue.current_user.id,
-                session: spot
+                surf_session: spot
             }, 
             function () {
                 if (self.vue.user_data.surf_sessions == null){
@@ -52,6 +52,27 @@ var app = function() {
                     self.vue.user_data.surf_sessions.push(spot);
                 }
                 console.log("added surf session", self.vue.user_data);
+            }
+        );
+    }
+
+    self.confirm_group_session = function(session_choice){
+        var spot = self.vue.best_spot_message;
+        if (session_choice == 2){
+            spot = self.vue.best_spot_message2
+        } else if (session_choice == 3){
+            spot = self.vue.best_spot_message3
+        }
+        var selected_group_id = (self.vue.groups.find(
+            group => group.group_name == self.vue.selected_group)).id;
+        console.log("group id:", selected_group_id);
+        $.post(edit_group_session_url,
+            {
+                group_id: selected_group_id,
+                session: spot
+            }, 
+            function () {
+                console.log("added group surf session", spot);
             }
         );
     }
@@ -217,6 +238,7 @@ var app = function() {
             surf: self.surf,
             get_user_data: self.get_user_data,
             confirm_surf_session: self.confirm_surf_session,
+            confirm_group_session: self.confirm_group_session,
             delete_surf_session: self.delete_surf_session,
             view_surf_session: self.view_surf_session,
             get_groups: self.get_groups,

@@ -38,6 +38,15 @@
 	display: inline-block;
 }
 
+.name_edit_icon {
+	cursor: pointer;
+	margin-left: 10px;
+}
+
+.name_edit_icon:hover {
+	color: grey;
+}
+
 .edit_group_name {
 	width: 90% !important;
 	margin: 12px !important;

@@ -16,7 +16,6 @@ var app = function() {
                 self.get_user_data(self.vue.current_user.id);
             }
         });
-        //$.post(delete_all_user_data_url, function(){console.log("deleted all user data")});
     };
 
     self.get_user_data = function (user_id) {
@@ -73,6 +72,7 @@ var app = function() {
                 self.vue.current_group = data.group;
                 self.vue.group_name = self.vue.current_group.group_name;
                 self.vue.group_idx = group_idx;
+                self.set_group_spot(self.vue.current_group.surf_session);
                 console.log("current group: ", self.vue.current_group);
                 if(data.group.group_owner == self.vue.current_user.email){
                     self.vue.is_modifiable = true;
@@ -81,6 +81,31 @@ var app = function() {
                 }
             }
         );
+    };
+
+    self.set_group_spot = function(spot_string){
+        if (spot_string){
+            var spot_data = spot_string.split(",");
+            self.vue.group_spot = {
+                style: {
+                    backgroundImage: getSpotPictureUrl(spot_data[0])
+                },
+                spot: spot_data[0],
+                wave_height: spot_data[2],
+                tide: spot_data[3],
+                time: spot_data[1]
+            };
+        } else {
+            self.vue.group_spot = {
+                style: {
+                    backgroundImage: 'url(../static/images/generic_spot.jpg)'
+                },
+                spot: "Choose a spot!",
+                wave_height: "Wave Height",
+                tide: "Tide",
+                time: "Time"
+            }
+        }
     };
 
     self.change_group_name = function(){
@@ -136,10 +161,6 @@ var app = function() {
             }
         );
     };
-
-    //members can be null
-    //current_user.email == should make it return false
-    //if members is null return false and don't for loop
 
     self.check_user = function(user_eml){
         if(self.vue.current_user.email == user_eml){
@@ -243,6 +264,7 @@ var app = function() {
             },
             get_groups: self.get_groups,
             get_group: self.get_group,
+            set_group_spot: self.set_group_spot,
             change_group_name: self.change_group_name,
             invite_member: self.invite_member,
             delete_group: self.delete_group,
@@ -262,6 +284,16 @@ var app = function() {
 };
 
 var APP = null;
+
+function getSpotPictureUrl(spotName){
+    spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 
+    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
+    var spot = spotName.replace(/\s+/g, '').toLowerCase();
+    if (spotPics.includes(spot)){
+        return 'url(../static/images/' + spot + '.jpg)';
+    }
+    return 'url(../static/images/generic_spot.jpg)';
+}
 
 // This will make everything accessible from the js console;
 // for instance, self.x above would be accessible as APP.x

@@ -8,6 +8,7 @@
     var add_surf_session_url = "{{=URL('user_api', 'add_surf_session', user_signature=True)}}";
     var delete_surf_session_url = "{{=URL('user_api', 'delete_surf_session', user_signature=True)}}";
     var get_groups_url = "{{=URL('groups_api', 'get_groups', user_signature=True)}}";
+    var edit_group_session_url = "{{=URL('groups_api', 'edit_group_session', user_signature=True)}}";
 </script> 
 <link href="{{=URL('static','css/surf.css')}}" rel="stylesheet" type="text/css"/>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -103,7 +104,7 @@
 
           <transition name="slide-fade">
           <div v-if="best_spot_1 && best_spot_2 && best_spot_3" class="semi_transparent_box padded slide_box">
-            <div class="spot_card" v-on:click="confirm_surf_session(1)">
+            <div class="spot_card" v-on:click="confirm_group_session(1)">
               <div class="spot_image" v-bind:style="best_spot_1.style"> 
                 <label class="left spot_rank"> Best </label>
                 <label class="right spot_time"> ${best_spot_1.time} </label>
@@ -115,7 +116,7 @@
               </div>
             </div>
 
-            <div class="spot_card" v-on:click="confirm_surf_session(2)">
+            <div class="spot_card" v-on:click="confirm_group_session(2)">
               <div class="spot_image" v-bind:style="best_spot_2.style"> 
                 <label class="left spot_rank"> 2nd Best </label>
                 <label class="right spot_time"> ${best_spot_2.time} </label>
@@ -127,7 +128,7 @@
               </div>
             </div>
 
-            <div class="spot_card" v-on:click="confirm_surf_session(3)">
+            <div class="spot_card" v-on:click="confirm_group_session(3)">
               <div class="spot_image" v-bind:style="best_spot_3.style"> 
                 <label class="left spot_rank"> 3rd Best </label>
                 <label class="right spot_time"> ${best_spot_3.time} </label>

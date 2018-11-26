@@ -46,7 +46,7 @@
 						<div class="name_container">
 							<div class="center">
 								<h3 class="group_name" v-if="!editing_group_name"> ${group_name} </h3>
-								<i class="far fa-edit" v-if="!editing_group_name" v-on:click="edit_group_name()"></i>
+								<i class="far fa-edit name_edit_icon" v-if="!editing_group_name" v-on:click="edit_group_name()"></i>
 								<input class="edit_group_name" type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()" v-if="editing_group_name">
 							</div>
 						</div>
@@ -55,12 +55,12 @@
 								<h5 class="center"> Group Session </h5>
 								<div class="spot_card_group">
 					              <div class="spot_image" v-bind:style="group_spot.style"> 
-					                <label class="right spot_time"> Today @ 1:30PM </label>
+					                <label class="right spot_time"> ${group_spot.time} </label>
 					              </div>
 					              <div class="spot_container">
-					                <h4 class="spot_title"><b>Pleasure Point</b></h4> 
-					                <span>Wave Height: 4.5ft</span> <br>
-					                <span>Tide: 1.2ft</span> 
+					                <h4 class="spot_title"><b>${group_spot.spot}</b></h4> 
+					                <span>${group_spot.wave_height}</span> <br>
+					                <span>${group_spot.tide}</span> 
 					              </div>
 					            </div>
 							</div>
@@ -70,6 +70,7 @@
 								<div class="left member" v-for="(member, index) in current_group.members">
 									<label class="left">${member}</label> <br>
 								</div>
+								<br>
 								<div class="center" v-if="current_group">
 									<h6 class="center">Invite members:</h6>
 									<select class="threequarters" v-model="invitee">
@@ -107,12 +108,12 @@
 								<h5 class="center"> Group Session </h5>
 								<div class="spot_card_group">
 					              <div class="spot_image" v-bind:style="group_spot.style"> 
-					                <label class="right spot_time"> Today @ 1:30PM </label>
+					                <label class="right spot_time"> ${group_spot.time} </label>
 					              </div>
 					              <div class="spot_container">
-					                <h4 class="spot_title"><b>Pleasure Point</b></h4> 
-					                <span>Wave Height: 4.5ft</span> <br>
-					                <span>Tide: 1.2ft</span> 
+					                <h4 class="spot_title"><b>${group_spot.spot}</b></h4> 
+					                <span>${group_spot.wave_height}</span> <br>
+					                <span>${group_spot.tide}</span> 
 					              </div>
 					            </div>
 							</div>

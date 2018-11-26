@@ -15,7 +15,8 @@ def add_group():
 		id = r.id,
         group_owner = r.group_owner,
 		group_name = r.group_name,
-        members = r.members
+        members = r.members,
+        surf_session = r.surf_session
     )))
 
 def delete_all_group_data():
@@ -37,7 +38,8 @@ def get_groups():
                 id = group.id,
                 group_owner = group.group_owner,
                 group_name = group.group_name,
-                members = group.members
+                members = group.members,
+                surf_session = group.surf_session
             )
             groups.append(t)
     for r in db(db.group_data.group_owner == request.vars.group_owner).select():
@@ -45,7 +47,8 @@ def get_groups():
             id = r.id,
             group_owner = r.group_owner,
             group_name = r.group_name,
-            members = r.members
+            members = r.members,
+            surf_session = r.surf_session
         )
         groups.append(t)
     return response.json(dict(
@@ -58,8 +61,14 @@ def get_group():
 		id = r.id,
         group_owner = r.group_owner,
 		group_name = r.group_name,
-        members = r.members
+        members = r.members,
+        surf_session = r.surf_session
     )))
+
+def edit_group_session():
+    r = db(db.group_data.id == request.vars.group_id).select().first()
+    r.update_record(surf_session=request.vars.session)
+    return "ok"
 
 def invite_member():
     r = db(db.user_data.email == request.vars.invitee).select().first()
