@@ -47,6 +47,7 @@
           <div class="semi_transparent_box padded">
             <button class="btn rounded" v-on:click="surf(0)"><h5>Personal recommendation</h5></button>
             <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
+            <h4 class="warning_title"><b>${warnings}</b></h4> 
           </div>
 
           <transition name="slide-fade">

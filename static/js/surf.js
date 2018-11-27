@@ -106,6 +106,7 @@ var app = function() {
 
     //creates 3 different recommendations for surf
     self.surf = async function(recType){
+        this.warnings = "";
         
         if (self.vue.toggle_groups){
             if (!self.vue.selected_group){
@@ -116,6 +117,10 @@ var app = function() {
         }
         if(recType == 0){
             var skill_level = self.vue.user_data.skill_level;
+            if(skill_level === undefined){
+                skill_level = "Expert";
+                this.warnings = "You are not logged in. Displaying expert recommendation.";
+            }
         }
         else if(recType == 1){
             var skill_level = self.vue.group_skill;
@@ -150,12 +155,26 @@ var app = function() {
         var allSpotsSizeAtBestTime = []; //array of the size of the waves at the best time for each spot, same indexing as spot ids
         var allSpotsTideHeights = [];    //array of the tide heights at these times
 
+        var maxNewSkillLevel = skill_level;
         //for each spot find best time during best tide times
         for(var spotToCheck = 0; spotToCheck < spotIds.length; spotToCheck++){
             var timeAndSize = await findBestTimeForSpot(bestTideTimes, skill_level, spotIds[spotToCheck]);
             allSpotsBestTime.push(timeAndSize[0]);
             allSpotsSizeAtBestTime.push(timeAndSize[1]);
             allSpotsTideHeights.push(tideResponse.data[timeAndSize[0]].tide);
+            if(timeAndSize[3] == "Intermediate" && maxNewSkillLevel == "Beginner"){
+                maxNewSkillLevel = "Intermediate";
+            }
+            if(timeAndSize[3] == "Advanced" && maxNewSkillLevel == "Intermediate"){
+                maxNewSkillLevel = "Advanced";
+            }
+            if(timeAndSize[3] == "Expert" && maxNewSkillLevel == "Advanced"){
+                maxNewSkillLevel = "Expert";
+            }
+            //check if no waves were found in skill level
+            if(timeAndSize[2] == true){
+                this.warnings = "Caution: No waves were found in your skill level, the waves may be too large for you. Displaying waves for " + maxNewSkillLevel + " skill level.";
+            }
         }
 
         //go through list of each spots best time and size and pick best 3 
@@ -166,13 +185,15 @@ var app = function() {
         for(var spotToCheck = 0; spotToCheck < allSpotsBestTime.length; spotToCheck++){
             if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[0]){
                 topThreeSpotSizes[2] = topThreeSpotSizes[1];
-                topThreeSpotSizes[1] = topThreeSpotSizes[0];
                 timesForBestSizes[2] = timesForBestSizes[1];
-                timesForBestSizes[1] = timesForBestSizes[0];
                 topThreeSpotNames[2] = topThreeSpotNames[1];
-                topThreeSpotNames[1] = topThreeSpotNames[0];
                 tidesForBestSizes[2] = tidesForBestSizes[1];
+
+                topThreeSpotSizes[1] = topThreeSpotSizes[0];
+                timesForBestSizes[1] = timesForBestSizes[0];
+                topThreeSpotNames[1] = topThreeSpotNames[0];
                 tidesForBestSizes[1] = tidesForBestSizes[0];
+
                 topThreeSpotSizes[0] = allSpotsSizeAtBestTime[spotToCheck];
                 timesForBestSizes[0] = allSpotsBestTime[spotToCheck];
                 topThreeSpotNames[0] = spotNames[spotToCheck]; 
@@ -183,6 +204,7 @@ var app = function() {
                 timesForBestSizes[2] = timesForBestSizes[1];
                 topThreeSpotNames[2] = topThreeSpotNames[1];
                 tidesForBestSizes[2] = tidesForBestSizes[1];
+
                 topThreeSpotSizes[1] = allSpotsSizeAtBestTime[spotToCheck];
                 timesForBestSizes[1] = allSpotsBestTime[spotToCheck];
                 topThreeSpotNames[1] = spotNames[spotToCheck]; 
@@ -204,13 +226,14 @@ var app = function() {
         self.vue.best_spot_1 = createSpotObject(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0]);
         self.vue.best_spot_2 = createSpotObject(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
         self.vue.best_spot_3 = createSpotObject(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
-
         self.vue.calculating = false;
+        
 
         //add markers to each spot
         setMarker(this.best_spot_message);
         setMarker(this.best_spot_message2);
         setMarker(this.best_spot_message3);
+
     }
 
     self.view_surf_session = async function(message) {
@@ -264,6 +287,7 @@ var app = function() {
             best_spot_message: "",
             best_spot_message2: "",
             best_spot_message3: "",
+            warnings: "",
             best_spot_1: null,
             best_spot_2: null,
             best_spot_3: null,
@@ -415,6 +439,9 @@ async function findBestTimeForSpot(bestTideTimes, skill_level, spotId){
     var minHeight = minAndMaxHeights[0]; var maxHeight = minAndMaxHeights[1];
     var bestSizeForSpot = 0;
     var timeWithBestSize = 0;
+    var skillChanged = false;
+    var next_skill_level = skill_level;
+    var highest_skill_level = skill_level;
 
     const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spotId + "/",
         { params: {dcat:"week"}});
@@ -429,7 +456,32 @@ async function findBestTimeForSpot(bestTideTimes, skill_level, spotId){
             }
         }
     }
-    return [timeWithBestSize, bestSizeForSpot];
+    if(timeWithBestSize == 0 || bestSizeForSpot == 0){
+        next_skill_level = calculateNextSkill(skill_level);
+        highest_skill_level = next_skill_level;
+        var timeAndSize = await findBestTimeForSpot(bestTideTimes, next_skill_level, spotId);
+        timeWithBestSize = timeAndSize[0];
+        bestSizeForSpot = timeAndSize[1];
+        highest_skill_level = timeAndSize[3];
+        skillChanged = true;
+    }
+    return [timeWithBestSize, bestSizeForSpot, skillChanged, highest_skill_level];
+}
+
+//takes skill level
+//returns next higherup skill level
+function calculateNextSkill(skill_level){
+    var new_skill;
+    if(skill_level == "Beginner"){
+        new_skill = "Intermediate";
+    }
+    else if(skill_level == "Intermediate"){
+        new_skill = "Advanced";
+    }
+    else if(skill_level == "Advanced"){
+        new_skill = "Expert";
+    }
+    return new_skill;
 }
 
 //takes average wave size and user skill level
@@ -450,7 +502,7 @@ function calculateMinMaxHeights(skill_level){
     }
     else if(skill_level == 'Expert'){
         minHeight = 0;
-        maxHeight = 20; // no maximum
+        maxHeight = 50; // no maximum
     }
     return [minHeight, maxHeight];
 }
