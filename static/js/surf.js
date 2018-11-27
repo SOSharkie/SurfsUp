@@ -221,6 +221,25 @@ var app = function() {
         );
     };
 
+    self.calculate_group_skill = function(){
+        $.get(calculate_group_skill_url, {
+                group: self.vue.selected_group,
+            }, function(data){
+                console.log("avg skill level: ", data);
+                if (data == 1)
+                    self.vue.group_skill = 'Beginner';
+                else if (data == 2)
+                    self.vue.group_skill = 'Intermediate';
+                else if (data == 3)
+                    self.vue.group_skill = 'Advanced';
+                else if (data == 4)
+                    self.vue.group_skill = 'Expert';
+                else
+                    self.vue.group_skill = 'Beginner';
+            }       
+        );
+    }
+
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -246,7 +265,8 @@ var app = function() {
             toggle_groups: false,
             groups: [],
             selected_group: null,
-            display_group_alert: false
+            display_group_alert: false,
+            group_skill: 'Beginner',
         },
         methods: {
             get_users: self.get_users,
@@ -257,6 +277,7 @@ var app = function() {
             delete_surf_session: self.delete_surf_session,
             view_surf_session: self.view_surf_session,
             get_groups: self.get_groups,
+            calculate_group_skill: self.calculate_group_skill,
             toggle_to_group: function(choice){
                 this.best_spot_message = "";
                 this.best_spot_1 = null;

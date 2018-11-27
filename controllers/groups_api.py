@@ -114,3 +114,35 @@ def leave_group():
             u.groups.pop(index)
             u.update_record()
     return "ok"
+
+def calculate_group_skill():
+    group = db(db.group_data.group_name == request.vars.group).select().first()
+    owner = db(db.user_data.email == group.group_owner).select().first()
+    skill_level = 0
+    counter = 0
+    print("owner skill lvl: ", owner.skill_level)
+    if owner.skill_level == 'Beginner':
+        skill_level = 1
+    elif owner.skill_level == 'Intermediate':
+        skill_level = 2
+    elif owner.skill_level == 'Advanced':
+        skill_level = 3
+    elif owner.skill_level == 'Expert':
+        skill_level = 4
+    counter = counter + 1
+    for idx, mem in enumerate(group.members):
+        user = db(db.user_data.email == mem).select().first()
+        print("users skill lvl: ", user.skill_level)
+        if user.skill_level == 'Beginner':
+            skill_level += 1
+        elif user.skill_level == 'Intermediate':
+            skill_level += 2
+        elif user.skill_level == 'Advanced':
+            skill_level += 3
+        elif user.skill_level == 'Expert':
+            skill_level += 4
+        counter = counter + 1
+    print("unrounded skill:", skill_level)
+    skill_level = round(skill_level/counter)
+    print("rounded skill:", skill_level)
+    return skill_level
