@@ -54,16 +54,18 @@
 						<div class="spot_and_members">
 							<div class="group_left left">
 								<h5 class="center"> Group Session </h5>
-								<div class="spot_card_group">
-					              <div class="spot_image" v-bind:style="group_spot.style"> 
-					                <label class="right spot_time"> ${group_spot.time} </label>
-					              </div>
-					              <div class="spot_container">
-					                <h4 class="spot_title"><b>${group_spot.spot}</b></h4> 
-					                <span>${group_spot.wave_height}</span> <br>
-					                <span>${group_spot.tide}</span> 
-					              </div>
-					            </div>
+								<a href="./surf/group">
+									<div class="spot_card_group">
+						              <div class="spot_image" v-bind:style="group_spot.style"> 
+						                <label class="right spot_time"> ${group_spot.time} </label>
+						              </div>
+						              <div class="spot_container">
+						                <h4 class="spot_title"><b>${group_spot.spot}</b></h4> 
+						                <span>${group_spot.wave_height}</span> <br>
+						                <span>${group_spot.tide}</span> 
+						              </div>
+						            </div>
+					            </a>
 					            <div class="remove_container"><button class="remove_session center" v-on:click="remove_group_session()"> Remove Session</button></div>
 							</div>
 							<div class="group_right right">

@@ -31,7 +31,7 @@ response.google_analytics_id = None
 response.menu = [
     (T('Home'), False, URL('default', 'index'), []),
     (T('Profile'), False, URL('default', 'profile'), []),
-    (T('Surf'), False, URL('default', 'surf'), []),
+    (T('Surf'), False, URL('default', 'surf', args=['personal']), []),
     (T('Groups'), False, URL('default', 'groups'), []),
     (T('About'), False, URL('default', 'about'), [])
 ]

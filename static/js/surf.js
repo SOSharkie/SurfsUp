@@ -83,7 +83,7 @@ var app = function() {
         }
         var selected_group_id = (self.vue.groups.find(
             group => group.group_name == self.vue.selected_group)).id;
-        console.log("group id:", selected_group_id);
+        console.log("session:", spot);
         $.post(edit_group_session_url,
             {
                 group_id: selected_group_id,
@@ -222,9 +222,9 @@ var app = function() {
         }
         //clear all markers on the map before adding new recommended spots
         clearMarkers();
-        this.best_spot_message = createSpotMessage(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0] );
-        this.best_spot_message2 = createSpotMessage(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
-        this.best_spot_message3 = createSpotMessage(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
+        self.vue.best_spot_message = createSpotMessage(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0] );
+        self.vue.best_spot_message2 = createSpotMessage(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
+        self.vue.best_spot_message3 = createSpotMessage(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
 
         self.vue.best_spot_1 = createSpotObject(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0]);
         self.vue.best_spot_2 = createSpotObject(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
@@ -233,9 +233,9 @@ var app = function() {
         
 
         //add markers to each spot
-        setMarker(this.best_spot_message);
-        setMarker(this.best_spot_message2);
-        setMarker(this.best_spot_message3);
+        setMarker(self.vue.best_spot_message);
+        setMarker(self.vue.best_spot_message2);
+        setMarker(self.vue.best_spot_message3);
 
     }
 
@@ -317,11 +317,11 @@ var app = function() {
             get_groups: self.get_groups,
             calculate_group_skill: self.calculate_group_skill,
             toggle_to_group: function(choice){
-                this.best_spot_message = "";
+                self.vue.best_spot_message = "";
                 this.best_spot_1 = null;
-                this.best_spot_message2 = "";
+                self.vue.best_spot_message2 = "";
                 this.best_spot_2 = null;
-                this.best_spot_message3 = "";
+                self.vue.best_spot_message3 = "";
                 this.best_spot_3 = null;
                 this.toggle_groups = choice;
             }
@@ -330,6 +330,11 @@ var app = function() {
     });
 
     self.get_users();
+
+    if (window.location.href.includes("group")){
+        self.vue.toggle_groups = true;
+    }
+
     $("#vue-div").show();
     return self;
 };
@@ -585,9 +590,9 @@ function getSpotPictureUrl(spotName){
     'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
     var spot = spotName.replace(/\s+/g, '').toLowerCase();
     if (spotPics.includes(spot)){
-        return 'url(../static/images/' + spot + '.jpg)';
+        return 'url(../../static/images/' + spot + '.jpg)';
     }
-    return 'url(../static/images/generic_spot.jpg)';
+    return 'url(../../static/images/generic_spot.jpg)';
 }
 
 function getVals(){
