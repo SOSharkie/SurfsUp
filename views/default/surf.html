@@ -45,7 +45,7 @@
         <!-------------------------- PERSONAL RECOMMENDATION CONTAINER -------------------------->
         <div class="container padded rec_window" v-if="!toggle_groups">
           <div class="semi_transparent_box padded">
-            <button class="btn rounded" v-on:click="surf()"><h5>Personal recommendation</h5></button>
+            <button class="btn rounded" v-on:click="surf(0)"><h5>Personal recommendation</h5></button>
             <div v-if="calculating" class="progress threequarters"><div class="indeterminate"></div></div>
           </div>
 

@@ -105,7 +105,8 @@ var app = function() {
     }
 
     //creates 3 different recommendations for surf
-    self.surf = async function(){
+    self.surf = async function(recType){
+        
         if (self.vue.toggle_groups){
             if (!self.vue.selected_group){
                 self.vue.display_group_alert = true;
@@ -113,10 +114,17 @@ var app = function() {
                 return;
             }
         }
+        if(recType == 0){
+            var skill_level = self.vue.user_data.skill_level;
+        }
+        else if(recType == 1){
+            var skill_level = self.vue.group_skill;
+        }
+        console.log(skill_level);
         
         var county = "santa-cruz/";
         self.vue.calculating = true;
-        var skill_level = self.vue.user_data.skill_level;
+        
         var startTime = self.start_hour;
         var endTime = self.end_hour;
         var spotIds = [];
@@ -236,8 +244,11 @@ var app = function() {
                     self.vue.group_skill = 'Expert';
                 else
                     self.vue.group_skill = 'Beginner';
-            }       
+                self.surf(1);
+            }    
+
         );
+        
     }
 
     // Complete as needed.
