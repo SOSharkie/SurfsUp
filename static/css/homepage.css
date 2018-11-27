@@ -1,4 +1,35 @@
 
+
+.homepage_container {
+  margin: 5%;
+  text-align: center;
+  padding: 10px !important;
+  padding-bottom: 20px !important;
+  overflow-x: hidden;
+}
+
+
+.homepage_info {
+  text-align: center;
+}
+
+.homepage_link {
+  cursor: pointer;
+}
+
+.homepage_link:hover {
+  color: white !important;
+  background-color: rgba(0, 0, 0, 0.6); 
+}
+
+.homepage_link:hover .homepage_text {
+  color: white;
+}
+
+.homepage_text {
+  color: black;
+}
+
 /* Next & previous buttons */
 .prev, .next {
   cursor: pointer;
@@ -13,7 +44,6 @@
   transition: 0.6s ease;
   user-select: none;
 }
-
 
 /* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {

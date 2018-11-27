@@ -32,6 +32,9 @@ var app = function() {
     };
 
     self.confirm_surf_session = function(session_choice) {
+        if (!self.vue.logged_in){
+            return;
+        }
         var spot;
         if (session_choice == 1){
             spot = self.vue.best_spot_message;

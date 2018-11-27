@@ -1,6 +1,3 @@
-a {color:#26a69a}
-a:not(.btn):not(.noeffect):hover {color:#26a69a}
-a:not(.btn):not(.noeffect):after {background-color:#26a69a}
 .progress .determinate {background-color:#26a69a}
 .progress .indeterminate {background-color:#26a69a}
 .tags > span {background-color: #26a69a}

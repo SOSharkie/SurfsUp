@@ -10,17 +10,8 @@
 
 .homepage {
   background-image: url("../images/surfer_1.jpg");
-  height: 100%;
   background-size: cover;
   background-repeat: no-repeat;
-}
-
-.homepage_center_container {
-  margin: 5%;
-  width: 35%;
-  border: 2px solid black;
-  padding: 10px !important;
-  padding-bottom: 20px !important;
 }
 
 .profile {
