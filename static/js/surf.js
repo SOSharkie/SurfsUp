@@ -127,8 +127,6 @@ var app = function() {
             var skill_level = self.vue.group_skill;
         }
 
-        var county = getCounty();
-        console.log(county);
         self.vue.calculating = true;
         
         var startTime = self.start_hour;
@@ -138,12 +136,19 @@ var app = function() {
 
         //gets spot ids and spot names for santa cruz
         var countyResponse = self.vue.countyResponse;
+        var tideResponse = self.vue.tideResponse;
+        //default to santa cruz if not logged in
+        if(countyResponse == null){
+            countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+            tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
+                {params: {dcat: "week"}});
+        }
         for(var i = 0; i < countyResponse.data.length; i++){
             spotIds[i] = countyResponse.data[i].spot_id;
             spotNames[i] = countyResponse.data[i].spot_name;
         }
     
-        var bestTideTimes = findBestTideTimes(startTime, endTime, self.vue.tideResponse, spotIds);
+        var bestTideTimes = findBestTideTimes(startTime, endTime, tideResponse, spotIds);
         var allSpotsBestTime = [];       //array of every spots best time, same indexing as spot ids
         var allSpotsSizeAtBestTime = []; //array of the size of the waves at the best time for each spot, same indexing as spot ids
         var allSpotsTideHeights = [];    //array of the tide heights at these times
@@ -154,7 +159,7 @@ var app = function() {
             var timeAndSize = await findBestTimeForSpot(bestTideTimes, skill_level, spotIds[spotToCheck]);
             allSpotsBestTime.push(timeAndSize[0]);
             allSpotsSizeAtBestTime.push(timeAndSize[1]);
-            allSpotsTideHeights.push(self.vue.tideResponse.data[timeAndSize[0]].tide);
+            allSpotsTideHeights.push(tideResponse.data[timeAndSize[0]].tide);
             if(timeAndSize[3] == "Intermediate" && maxNewSkillLevel == "Beginner"){
                 maxNewSkillLevel = "Intermediate";
             }
@@ -221,7 +226,7 @@ var app = function() {
         self.vue.best_spot_3 = createSpotObject(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
         self.vue.calculating = false;
         
-
+        var county = getCounty();
         //add markers to each spot
         setMarker(self.vue.best_spot_message, county);
         setMarker(self.vue.best_spot_message2, county);
@@ -362,7 +367,6 @@ async function setMarker(surfSpotMessage, county){
   //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
   var parsedMessage = surfSpotMessage.split(",");
   //this api call is only to get the coords of the spots
-  console.log(county);
   const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
   var bestSpotCoords = []; 
   for(var i = 0; i < spotResponse.data.length && bestSpotCoords.length != 2; i++){
@@ -394,7 +398,6 @@ async function setMarker(surfSpotMessage, county){
 //formats users county for api calls
 function getCounty(){
     var countyString = APP.vue.user_data.county;
-    console.log(countyString);
     var county = "";
     switch(countyString){
         case "Santa Cruz":
@@ -423,6 +426,9 @@ function getCounty(){
             break;
         case "San Diego":
             county = "san-diego/";
+            break;
+        default:
+            county = "santa-cruz/";
             break;
     }
     return county;
