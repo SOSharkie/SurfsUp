@@ -103,9 +103,9 @@
         <!-------------------------- GROUP RECOMMENDATION CONTAINER -------------------------->
         <div class="padded rec_window" v-if="toggle_groups && current_user">
           <div class="semi_transparent_box padded">
-            <!-- <button class="btn rounded" v-on:click="surf()"><h5>Group recommendation</h5></button> -->
             <button class="btn rounded" v-on:click="calculate_group_skill()"><h5>Group recommendation</h5></button>
             <select class="third group_option" v-model="selected_group">
+              <option disabled value="">Select a Group</option>
               <option v-for="(group, index) in groups">
                 ${group.group_name}
               </option>

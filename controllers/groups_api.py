@@ -130,6 +130,8 @@ def calculate_group_skill():
     elif owner.skill_level == 'Expert':
         skill_level = 4
     counter = counter + 1
+    if group.members is None:
+        return skill_level
     for idx, mem in enumerate(group.members):
         user = db(db.user_data.email == mem).select().first()
         print("users skill lvl: ", user.skill_level)

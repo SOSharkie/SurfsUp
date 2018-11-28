@@ -116,13 +116,6 @@ var app = function() {
     self.surf = async function(recType){
         this.warnings = "";
         
-        if (self.vue.toggle_groups){
-            if (!self.vue.selected_group){
-                self.vue.display_group_alert = true;
-                setTimeout(function(){self.vue.display_group_alert = false;}, 3000);
-                return;
-            }
-        }
         if(recType == 0){
             var skill_level = self.vue.user_data.skill_level;
             if(skill_level === undefined){
@@ -253,6 +246,11 @@ var app = function() {
     };
 
     self.calculate_group_skill = function(){
+        if (self.vue.selected_group == ''){
+            self.vue.display_group_alert = true;
+            setTimeout(function(){self.vue.display_group_alert = false;}, 3000);
+            return;
+        }
         $.get(calculate_group_skill_url, {
                 group: self.vue.selected_group,
             }, function(data){
@@ -302,7 +300,7 @@ var app = function() {
             calculating: false,
             toggle_groups: false,
             groups: [],
-            selected_group: null,
+            selected_group: '',
             display_group_alert: false,
             group_skill: 'Beginner',
         },
@@ -659,8 +657,12 @@ function createSpotObject(spotName, time, waveSize, tideHeight){
 
 function getSpotPictureUrl(spotName){
     spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 'manresa', 'santamarias',
-    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
+    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile',
+    'oceanbeach', 'mavericks', , 'uppertrestles', 'huntingtonbeach', 'bolsachica', 'scottscreek'];
     var spot = spotName.replace(/\s+/g, '').toLowerCase();
+    if (spot.includes('oceanbeach')){
+        spot = 'oceanbeach';
+    }
     if (spotPics.includes(spot)){
         return 'url(../../static/images/' + spot + '.jpg)';
     }

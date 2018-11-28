@@ -300,8 +300,12 @@ var APP = null;
 
 function getSpotPictureUrl(spotName){
     spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 'manresa', 'santamarias',
-    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile'];
+    'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile',
+    'oceanbeach', 'mavericks', 'uppertrestles', 'huntingtonbeach', 'bolsachica', 'scottscreek'];
     var spot = spotName.replace(/\s+/g, '').toLowerCase();
+    if (spot.includes('oceanbeach')){
+        spot = 'oceanbeach';
+    }
     if (spotPics.includes(spot)){
         return 'url(../static/images/' + spot + '.jpg)';
     }
