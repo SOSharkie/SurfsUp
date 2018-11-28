@@ -160,14 +160,8 @@ var app = function() {
             allSpotsBestTime.push(timeAndSize[0]);
             allSpotsSizeAtBestTime.push(timeAndSize[1]);
             allSpotsTideHeights.push(tideResponse.data[timeAndSize[0]].tide);
-            if(timeAndSize[3] == "Intermediate" && maxNewSkillLevel == "Beginner"){
-                maxNewSkillLevel = "Intermediate";
-            }
-            if(timeAndSize[3] == "Advanced" && maxNewSkillLevel == "Intermediate"){
-                maxNewSkillLevel = "Advanced";
-            }
-            if(timeAndSize[3] == "Expert" && maxNewSkillLevel == "Advanced"){
-                maxNewSkillLevel = "Expert";
+            if(skillLevelAsInt(timeAndSize[3]) > skillLevelAsInt(maxNewSkillLevel) ){
+                maxNewSkillLevel = timeAndSize[3];
             }
             //check if no waves were found in skill level
             if(timeAndSize[2] == true){
@@ -571,6 +565,21 @@ function calculateNextSkill(skill_level){
     }
     return new_skill;
 }
+ 
+function skillLevelAsInt(skill_level){
+    if(skill_level == 'Beginner'){
+        return 1;
+    }
+    else if(skill_level == 'Intermediate'){
+        return 2;
+    }
+    else if(skill_level == 'Advanced'){
+        return 3;
+    }
+    else if(skill_level == 'Expert'){
+        return 4;
+    }
+}
 
 //takes average wave size and user skill level
 //returns min and max heights the waves should be based on skill level and wave size
@@ -598,6 +607,9 @@ function calculateMinMaxHeights(skill_level){
 function createSpotMessage(spotName, time, waveSize, tideHeight){
     var ampm = "AM";
     var todayTmrw = "Today";
+    var todayDate = new Date();
+    var date_day = todayDate.getDate();
+    var date_month = todayDate.getMonth() + 1;
     if(time >= 12){
         if(time < 24){
             ampm = "PM";
@@ -619,7 +631,32 @@ function createSpotMessage(spotName, time, waveSize, tideHeight){
             ampm = "PM";
         }
     }
-    var message = spotName + ", " + todayTmrw + " @ " + time + ampm + ", Waves: " + Math.round(waveSize * 100)/100
+    if(todayTmrw == "Tomorrow"){
+        date_day++;
+        if(date_month % 2 == 0){
+            if(date_day > 31){
+                date_month++;
+                if(date_month > 12){
+                    date_month = 1;
+                }
+                date_day = 1;
+            }
+        }
+        else if(date_month != 3){
+            if(date_day > 30){
+                date_month++;
+                date_day = 1;
+            }
+        }
+        else{
+            if(date_day > 28){
+                date_month++;
+                date_day = 1;
+            }
+        }
+    }
+    var date_day_and_month = date_month + "/" + date_day;
+    var message = spotName + ", " + date_day_and_month + " @ " + time + ampm + ", Waves: " + Math.round(waveSize * 100)/100
         + " ft," + " Tide: " + Math.round(tideHeight * 100)/100 + " ft ";
     return message;
 }
