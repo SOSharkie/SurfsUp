@@ -51,10 +51,10 @@
 								<input class="edit_group_name" type="text" v-model="group_name" v-on:blur="change_group_name()" v-on:keyup.enter="change_group_name()" v-if="editing_group_name">
 							</div>
 						</div>
-						<div class="spot_and_members">
+						<div v-if="current_group" class="spot_and_members">
 							<div class="group_left left">
 								<h5 class="center"> Group Session </h5>
-								<a href="./surf/group">
+								<a v-bind:href="group_surf_url">
 									<div class="spot_card_group">
 						              <div class="spot_image" v-bind:style="group_spot.style"> 
 						                <label class="right spot_time"> ${group_spot.time} </label>
@@ -78,6 +78,7 @@
 								<div class="center" v-if="current_group">
 									<h6 class="center">Invite members:</h6>
 									<select class="threequarters" v-model="invitee">
+										<option disabled value="">Select a Member</option>
 										<option v-for="(user, index) in users" id="member" v-if="check_user(user.email)">
 											${user.email}
 										</option>

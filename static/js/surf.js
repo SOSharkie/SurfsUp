@@ -334,8 +334,12 @@ var app = function() {
 
     self.get_users();
 
-    if (window.location.href.includes("group")){
+    var current_url = window.location.href;
+    if (current_url.includes("group=")){
         self.vue.toggle_groups = true;
+        var url_group = current_url.substr(current_url.indexOf('=')+1);
+        self.vue.selected_group = url_group.replace(/%20/g, " ");
+        console.log("selected_group: ", self.vue.selected_group);
     }
 
     $("#vue-div").show();

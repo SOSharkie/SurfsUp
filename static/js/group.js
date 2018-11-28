@@ -69,10 +69,12 @@ var app = function() {
         $.post(get_group_url, {
                 group_id: self.vue.groups[group_idx].id
             }, function(data){
+                self.vue.invitee = '';
                 self.vue.current_group = data.group;
                 self.vue.group_name = self.vue.current_group.group_name;
                 self.vue.group_idx = group_idx;
                 self.set_group_spot(self.vue.current_group.surf_session);
+                self.vue.group_surf_url = "./surf/group=" + self.vue.current_group.group_name;
                 console.log("current group: ", self.vue.current_group);
                 if(data.group.group_owner == self.vue.current_user.email){
                     self.vue.is_modifiable = true;
@@ -130,13 +132,15 @@ var app = function() {
     };
 
     self.invite_member = function(){
-        $.post(invite_member_url, {
-                invitee: self.vue.invitee,
-                group_id: self.vue.groups[self.vue.group_idx].id
-            }, function(){
-                console.log("invited: ", self.vue.invitee);
-            }
-        );
+        if (invitee != ''){
+            $.post(invite_member_url, {
+                    invitee: self.vue.invitee,
+                    group_id: self.vue.groups[self.vue.group_idx].id
+                }, function(){
+                    console.log("invited: ", self.vue.invitee);
+                }
+            );
+        }
     };
 
     self.add_to_group = function(group_id){
@@ -218,7 +222,7 @@ var app = function() {
             user_data: null,
             group_data: null,
             group_idx: 0,
-            invitee: null,
+            invitee: '',
             is_nfc: false,
             is_modifiable: false,
             display_alert: false,
@@ -233,7 +237,8 @@ var app = function() {
                 wave_height: "4.6ft",
                 tide: "1.2ft",
                 time: "Today @ 1:30PM"
-            }
+            },
+            group_surf_url: "./surf/group"
         },
         methods: {
             toggle_making_group: function(){
@@ -256,9 +261,10 @@ var app = function() {
                         group_owner: this.current_user.email,
                         group_name: 'new group',
                     }, function(data){
-                        this.current_group = data.group_data;
+                        self.vue.groups.push(data.group_data);
+                        self.get_group(self.vue.groups.length-1);
+                        self.vue.making_group();
                         console.log("created new group", this.current_group);
-                        self.get_groups();
                     }
                 );
                 this.group_idx = this.groups.length;
