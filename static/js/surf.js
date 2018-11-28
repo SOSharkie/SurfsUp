@@ -165,7 +165,7 @@ var app = function() {
             }
             //check if no waves were found in skill level
             if(timeAndSize[2] == true){
-                this.warnings = "Caution: No waves were found in your skill level, the waves may be too large for you. Displaying waves for " + maxNewSkillLevel + " skill level.";
+                self.vue.warnings = "Caution: No waves were found in your skill level, the waves may be too large for you. Displaying waves for " + maxNewSkillLevel + " skill level.";
             }
         }
 
