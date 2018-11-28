@@ -37,7 +37,8 @@ def get_user_data():
                 email = r.email,
                 notifications = r.notifications,
                 surf_sessions = r.surf_sessions,
-				groups = r.groups
+				groups = r.groups,
+				county = r.county
 			)))
 
 def get_notifications():
@@ -79,7 +80,8 @@ def add_user_data():
         email = r.email,
         notifications = r.notifications,
         surf_sessions = r.surf_sessions,
-		groups = r.groups
+		groups = r.groups,
+		county = r.county
     )))
 
 # Edit user data
@@ -94,6 +96,7 @@ def edit_user_data():
 	else:
 		row.update_record(skill_level = request.vars.skill_level)
 		row.update_record(username = request.vars.username)
+		row.update_record(county = request.vars.county)
 	return "ok" 
 
 def add_surf_session():

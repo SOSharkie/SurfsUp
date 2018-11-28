@@ -49,7 +49,8 @@ var app = function() {
                 user_id: self.vue.current_user.id,
                 username: self.vue.user_data.username,
                 board: self.vue.new_board,
-                skill_level: self.vue.user_data.skill_level
+                skill_level: self.vue.user_data.skill_level,
+                county: self.vue.user_data.county
             }, 
             function () {
                 self.vue.adding_board = false;

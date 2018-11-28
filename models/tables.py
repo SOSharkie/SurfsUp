@@ -19,6 +19,7 @@ db.define_table('user_data',
                 Field('notifications', 'list:integer'),
                 Field('surf_sessions', 'list:string'),
                 Field('groups', 'list:integer'),
+                Field('county', default='Santa Cruz')
                 )
 
 db.define_table('group_data',

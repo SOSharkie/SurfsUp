@@ -96,6 +96,34 @@
         </div>
       </div>
 
+      <div class="field_container quarter spaced">
+          <div class="field_container semi_transparent_box padded">
+            <div class="container"> 
+              <i class="half fa fa-tasks fa-5x"></i>
+              <h4 class="half">County</h4>
+            </div>
+            <div class="profile_field silver padded">
+              <select class="fill silver" v-model="user_data.county" v-on:change="edit_user_data(false)">
+                <option>Santa Cruz</option>
+                <option>Del Norte</option>
+                <option>Humboldt</option>
+                <option>Mendocino</option>
+                <option>Sonoma</option>
+                <option>Marin</option>
+                <option>San Francisco</option>
+                <option>San Mateo</option>
+                <option>Monterey</option>
+                <option>San Luis Obispo</option>
+                <option>Santa Barbara</option>
+                <option>Ventura</option>
+                <option>Los Angeles</option>
+                <option>Orange County</option>
+                <option>San Diego</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
 		</div>
     
 	</div>
