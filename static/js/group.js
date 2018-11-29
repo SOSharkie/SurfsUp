@@ -132,7 +132,7 @@ var app = function() {
     };
 
     self.invite_member = function(){
-        if (invitee != ''){
+        if (self.vue.invitee != ''){
             $.post(invite_member_url, {
                     invitee: self.vue.invitee,
                     group_id: self.vue.groups[self.vue.group_idx].id
