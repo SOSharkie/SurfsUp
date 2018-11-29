@@ -230,7 +230,7 @@ var app = function() {
 
     self.view_surf_session = async function(message) {
         clearMarkers();
-        setMarker(message);
+        setMarker(message, getCounty());
     }
 
     self.get_groups = function(){
@@ -270,9 +270,24 @@ var app = function() {
         );
     }
 
+    self.check_session_date = function(session){
+        var current_time = new Date();
+        var session_date = session.substring(session.indexOf(',')+1, session.indexOf('W')-2);
+        var month = parseInt(session_date.substring(1, session_date.indexOf('/')));
+        var day = parseInt(session_date.substring(session_date.indexOf('/')+1, session_date.indexOf('@')-1));
+        var hour = session_date.substr(session_date.indexOf('@')+2);
+        if (hour.includes("PM")){
+            hour = hour.replace("PM", "");
+            hour = parseInt(hour)+12;
+        } else {
+            hour = hour.replace("AM", "");
+            hour = parseInt(hour);
+        }
+        var session_date_obj = new Date(current_time.getFullYear(), month, day, hour, 0, 0, 0);
 
+        return session_date_obj < current_time;
+    }
 
-    // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
         delimiters: ['${', '}'],
@@ -313,6 +328,7 @@ var app = function() {
             view_surf_session: self.view_surf_session,
             get_groups: self.get_groups,
             calculate_group_skill: self.calculate_group_skill,
+            check_session_date: self.check_session_date,
             toggle_to_group: function(choice){
                 self.vue.best_spot_message = "";
                 this.best_spot_1 = null;
@@ -435,7 +451,6 @@ function getCounty(){
 //centers map on users county
 function centerMap(county){
     var latlng = null;
-    console.log(county);
     switch(county){
         case "San Francisco":
             latlng = {lat:37.773972, lng: -122.431297};
@@ -480,7 +495,7 @@ async function calculateAverageSizeInCounty(spotIds, time){
     return avgSizeInCounty;
 }
 
-//takes avg wave size in county, start and end time inputted by user, and the api resposne for tide
+//takes avg wave size in county, start and end time inputted by user, and the api response for tide
 //returns the list of the most appropriate tide times based on current wave sizes
 function findBestTideTimes(startTime, endTime, tideResponse, spotIds){
     var bestTideTimes = [];
@@ -493,6 +508,10 @@ function findBestTideTimes(startTime, endTime, tideResponse, spotIds){
         if(tideAtTime > minAcceptableTide && tideAtTime < maxAcceptableTide){
             bestTideTimes.push(timeToCheck);
         }
+    }
+    if (bestTideTimes.length == 0){
+        bestTideTimes.push(startTime);
+        bestTideTimes.push(endTime);
     }
     return bestTideTimes;
 }

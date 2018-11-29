@@ -171,8 +171,13 @@
       <div class="container padded third semi_transparent_box session_container">
         <div class="session_container padded">
           <h5 class="center">Your Surf Sessions</h5>
-          <div class="silver padded tags tag_container">
-              <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)"> ${session.substring(0, session.lastIndexOf(','))}
+          <div v-if="user_data.surf_sessions" class="silver padded tags tag_container">
+            <h6 v-if="user_data.surf_sessions.length > 0" class="center session_label"> Past </h6>
+            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="check_session_date(session)"> ${session.substring(0, session.lastIndexOf(','))}
+              <i class="fa fa-trash session_delete" v-on:click.stop="delete_surf_session(index)"></i> 
+            </span>
+            <h6 v-if="user_data.surf_sessions.length > 0" class="center session_label"> Future </h6>
+            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="!check_session_date(session)"> ${session.substring(0, session.lastIndexOf(','))}
                 <i class="fa fa-trash session_delete" v-on:click.stop="delete_surf_session(index)"></i> 
               </span>
           </div>
