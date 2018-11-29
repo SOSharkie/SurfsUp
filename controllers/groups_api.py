@@ -102,7 +102,7 @@ def add_to_group():
 
 def leave_group():
     r = db(db.group_data.id == request.vars.group_id).select().first()
-    u = db(db.user_data.id == request.vars.user_id).select().first()
+    u = db(db.user_data.user_id == request.vars.user_id).select().first()
     for idx, mem in enumerate(r.members):
         if mem == request.vars.member:
             r.members.pop(idx)
