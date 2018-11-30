@@ -101,7 +101,7 @@
 /* The alert message box */
 .alert {
 	padding: 20px;
-	background-color: #2fcf5f;
+	background-color: #2fcf5fbe;
 	color: white;
 	margin-bottom: 15px;
 }
@@ -121,4 +121,12 @@
 /* When moving the mouse over the close button */
 .closebtn:hover {
 	color: black;
+}
+
+.inv_acc_color{
+	background-color: #2fcf5fbe
+}
+
+.inv_dec_color{
+	background-color: darkred
 }

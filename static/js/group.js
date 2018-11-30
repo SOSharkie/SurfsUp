@@ -223,7 +223,7 @@ var app = function() {
             group_data: null,
             group_idx: 0,
             invitee: '',
-            is_nfc: false,
+            is_nfc: true,
             is_modifiable: false,
             display_alert: false,
             users: [],
