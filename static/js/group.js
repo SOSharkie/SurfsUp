@@ -255,6 +255,9 @@ var app = function() {
                 this.display_alert = true;
                 setTimeout(function(){self.vue.display_alert = false;}, 3000);
             },
+            exit_alert: function() {
+                this.display_alert = false;
+            },
             add_group: function(){
                 this.is_modifiable = true;
                 $.post(add_group_url, {

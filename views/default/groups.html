@@ -88,7 +88,8 @@
 									</button>
 								</div>
 								<div class="alert" v-if="display_alert">
-									<span class="closebtn" v-on:click="toggle_alert()">&times; Invited user</span> 
+									<i class="left exit_alert fas fa-times" v-on:click="exit_alert()"></i>
+									<span> Invited ${invitee}</span> 
 								</div>
 							</div>
 						</div>
@@ -143,7 +144,7 @@
 				<div class="half">
 					<!-- Group List Container -->
 					<div class="semi_transparent_box group_list_container">
-						<h3 class="your_groups">Your groups</h3>
+						<h3 class="your_groups">Your Groups</h3>
 						<ul v-if="groups" class="">
 							<li v-for="(group, index) in groups">
 								<div class="threequarters">

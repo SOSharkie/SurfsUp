@@ -100,10 +100,15 @@
 
 /* The alert message box */
 .alert {
-	padding: 20px;
+	padding: 10px;
 	background-color: #2fcf5fbe;
 	color: white;
 	margin-bottom: 15px;
+	text-align: center;
+}
+
+.exit_alert:hover {
+	color: grey;
 }
 
 /* The close button */
