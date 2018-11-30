@@ -68,22 +68,28 @@ var app = function() {
         var spot;
         if (session_choice == 1){
             spot = self.vue.best_spot_message;
-            if (self.vue.user_data.surf_sessions.includes(spot)){
-                return;
+            if (self.vue.user_data.surf_sessions){
+                if (self.vue.user_data.surf_sessions.includes(spot)){
+                    return;
+                }
             }
             self.vue.best_spot_1.clicked_spot = true;
             setTimeout(function(){self.vue.best_spot_1.clicked_spot = false;}, 2000);
         } else if (session_choice == 2){
             spot = self.vue.best_spot_message2
-            if (self.vue.user_data.surf_sessions.includes(spot)){
-                return;
+            if (self.vue.user_data.surf_sessions){
+                if (self.vue.user_data.surf_sessions.includes(spot)){
+                    return;
+                }
             }
             self.vue.best_spot_2.clicked_spot = true;
             setTimeout(function(){self.vue.best_spot_2.clicked_spot = false;}, 2000);
         } else if (session_choice == 3){
             spot = self.vue.best_spot_message3
-            if (self.vue.user_data.surf_sessions.includes(spot)){
-                return;
+            if (self.vue.user_data.surf_sessions){
+                if (self.vue.user_data.surf_sessions.includes(spot)){
+                    return;
+                }
             }
             self.vue.best_spot_3.clicked_spot = true;
             setTimeout(function(){self.vue.best_spot_3.clicked_spot = false;}, 2000);
