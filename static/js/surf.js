@@ -270,9 +270,9 @@ var app = function() {
         
         var county = getCounty();
         //add markers to each spot
-        setMarker(self.vue.best_spot_message, county);
-        setMarker(self.vue.best_spot_message2, county);
-        setMarker(self.vue.best_spot_message3, county);
+        setMarker(self.vue.best_spot_message, county, timesForBestSizes[0]);
+        setMarker(self.vue.best_spot_message2, county, timesForBestSizes[1]);
+        setMarker(self.vue.best_spot_message3, county, timesForBestSizes[2]);
 
     };
 
@@ -437,37 +437,56 @@ function clearMarkers(){
 }
 
 //adds a marker with wave height on each reccomended surf spot 
-async function setMarker(surfSpotMessage, county){
-  //parses best spot message to get data to be displayed when a marker is clicked
-  //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
-  var parsedMessage = surfSpotMessage.split(",");
-  //this api call is only to get the coords of the spots
-  const spotResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
-  var bestSpotCoords = []; 
-  for(var i = 0; i < spotResponse.data.length && bestSpotCoords.length != 2; i++){
-    spotName = spotResponse.data[i].spot_name;
-    if(spotName == parsedMessage[0]){
-        bestSpotCoords.push(spotResponse.data[i].latitude);
-        bestSpotCoords.push(spotResponse.data[i].longitude);
+async function setMarker(surfSpotMessage, county, time){
+    //parses best spot message to get data to be displayed when a marker is clicked
+    //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
+    var parsedMessage = surfSpotMessage.split(","); 
+    var countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
+    var bestSpotCoords = []; 
+    var spot_id;
+    //this loop is only to get the coords of the spots
+    for(var i = 0; i < countyResponse.data.length && bestSpotCoords.length != 2; i++){
+        spotName = countyResponse.data[i].spot_name;
+        if(spotName == parsedMessage[0]){
+            bestSpotCoords.push(countyResponse.data[i].latitude);
+            bestSpotCoords.push(countyResponse.data[i].longitude);
+            spot_id = countyResponse.data[i].spot_id;
+        }
     }
-  }
-  spotName = parsedMessage[0];
-  var infowindow = new google.maps.InfoWindow({
-    content:'<div><b>'+ spotName + '</b></div>' + 
+    //spot forecast at the recomended time
+    const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spot_id + "/",
+        { params: {dcat:"week"}});
+    var spotForecast = spotResponse.data[time];
+    spotName = parsedMessage[0];
+    //Contains info to be displayed when marker is clicked
+    var infowindow;
+    if(time == null){
+        infowindow = new google.maps.InfoWindow({
+            content:'<div><b>'+ spotName + '</b></div>' + 
             '<div>' + parsedMessage[1] + '</div>' + 
             '<div>' + parsedMessage[2] + '</div>' + 
-            parsedMessage[3],
-  });
-  var marker = new google.maps.Marker({ 
-    position: {lat: bestSpotCoords[0], lng: bestSpotCoords[1]}, 
-    map: map,
-    animation: google.maps.Animation.DROP,
-    title: spotName
-  });
-  APP.vue.markers.push(marker);
-  marker.addListener('click', function() {
-    infowindow.open(map, marker);
-  });
+            '<div>' + parsedMessage[3] + '</div>',
+        });
+    }
+    else {
+        infowindow = new google.maps.InfoWindow({
+            content:'<div><b>'+ spotName + '</b></div>' + 
+            '<div>' + parsedMessage[1] + '</div>' + 
+            '<div>' + "Swell: " + spotForecast.shape_detail.swell + '</div>' + 
+            '<div>' + "Tide: " + spotForecast.shape_detail.tide + '</div>' +
+            '<div>' + "Wind: " + spotForecast.shape_detail.wind + '</div>',
+        });
+    }
+    var marker = new google.maps.Marker({ 
+        position: {lat: bestSpotCoords[0], lng: bestSpotCoords[1]}, 
+        map: map,
+        animation: google.maps.Animation.DROP,
+        title: spotName
+    });
+    APP.vue.markers.push(marker);
+    marker.addListener('click', function() {
+        infowindow.open(map, marker);
+    });
 }
 
 //formats users county for api calls
