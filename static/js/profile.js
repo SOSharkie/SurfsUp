@@ -6,6 +6,9 @@ var app = function() {
 
     Vue.config.silent = false; // show all warnings
 
+    /*
+    * Gets all users in the system, and the current user if logged in.
+    */
     self.get_users = function () {
         $.getJSON(get_users_url, function (data) {
             self.vue.users = data.users;
@@ -19,6 +22,9 @@ var app = function() {
         })
     };
 
+    /*
+    * Gets the user data for the currently logged in user.
+    */
     self.get_user_data = function (user_id) {
         $.get(user_data_url, {user_id: user_id}, function (data) {
             if (data == null){
@@ -30,6 +36,9 @@ var app = function() {
         })
     };
 
+    /*
+    * Creates the user data in the database if this is a new user.
+    */
     self.add_user_data = function () {
         $.post(add_user_data_url,
             {
@@ -42,6 +51,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Edits and saves the user data if the user changes one of the profile fields.
+    */
     self.edit_user_data = function (new_board) {
         $.post(edit_user_data_url,
             {
@@ -59,6 +71,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Deletes all the user data in the database. (FOR DEVELOPERS ONLY)
+    */
     self.delete_all_user_data = function() {
         $.post(delete_user_data_url, {  },
             function () {
@@ -67,6 +82,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Deletes all the groups in the database. (FOR DEVELOPERS ONLY)
+    */
     self.delete_all_group_data = function() {
         $.post(delete_group_data_url, {  },
             function () {
@@ -75,6 +93,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Adds a new surfboard to the users profile.
+    */
     self.add_board = function() {
         console.log("adding board");
         self.vue.edit_user_data("true");
@@ -87,11 +108,17 @@ var app = function() {
         self.vue.new_board = "New Board";
     }
 
+    /*
+    * Close the add board text field in the profile.
+    */
     self.stop_adding_board = function() {
         self.vue.adding_board = false;
         self.vue.new_board = "New Board";
     }
 
+    /*
+    * Deletes the selected board fron the users profile.
+    */
     self.delete_board = function(index) {
         console.log("delete board ", index);
         $.post(delete_board_url, { 

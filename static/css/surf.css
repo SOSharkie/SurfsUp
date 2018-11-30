@@ -122,6 +122,7 @@
 
 .session_label {
     margin-top: 2px;
+    text-decoration: underline;
 }
 
 #map {

@@ -1,4 +1,4 @@
-// This is the js for the default/index.html view.
+// This is the js for the default/group.html view.
 
 var app = function() {
 
@@ -6,6 +6,9 @@ var app = function() {
 
     Vue.config.silent = false; // show all warnings
 
+    /*
+    * Gets all users in the system, and the current user if logged in.
+    */
     self.get_users = function () {
         $.getJSON(get_users_url, function (data) {
             self.vue.users = data.users;
@@ -18,6 +21,9 @@ var app = function() {
         });
     };
 
+    /*
+    * Gets the user data for the currently logged in user.
+    */
     self.get_user_data = function (user_id) {
         $.get(user_data_url, {user_id: user_id}, function (data) {
             if (data == null){
@@ -31,6 +37,9 @@ var app = function() {
         });
     };
 
+    /*
+    * Creates the user data in the database if this is a new user.
+    */
     self.add_user_data = function () {
         $.post(add_user_data_url,
             {
@@ -44,6 +53,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Gets the notifications for the current user.
+    */
     self.get_notifications = function(user_id){
         $.get(get_notifications_url, {
                 user_id: user_id
@@ -54,6 +66,9 @@ var app = function() {
         );
     }
 
+    /*
+    * Gets all the groups the current user is a part of.
+    */
     self.get_groups = function(){
         $.post(get_groups_url, {
                 group_owner: self.vue.current_user.email,
@@ -65,6 +80,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Gets the selected group data and sets all the necessary variables for the group.
+    */
     self.get_group = function(group_idx){
         $.post(get_group_url, {
                 group_id: self.vue.groups[group_idx].id
@@ -85,6 +103,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Sets the spot card picture and data for the currently selected group.
+    */
     self.set_group_spot = function(spot_string){
         if (spot_string){
             var spot_data = spot_string.split(",");
@@ -110,6 +131,9 @@ var app = function() {
         }
     };
 
+    /*
+    * Changes the currently selected groups name.
+    */
     self.change_group_name = function(){
         $.post(change_group_name_url, {
                 group_id: self.vue.groups[self.vue.group_idx].id,
@@ -121,6 +145,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Deletes the currently selected group.
+    */
     self.delete_group = function(){
         $.post(delete_group_url, {
                 group_id: self.vue.groups[self.vue.group_idx].id
@@ -131,6 +158,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Invites the invitee to the currently selected group.
+    */
     self.invite_member = function(){
         if (self.vue.invitee != ''){
             $.post(invite_member_url, {
@@ -143,6 +173,9 @@ var app = function() {
         }
     };
 
+    /*
+    * If the user accepts a group invitation, adds the user to the group.
+    */
     self.add_to_group = function(group_id){
         $.post(add_to_group_url, {
                 group_id: group_id,
@@ -154,6 +187,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Removes the notifciation from the users notification list.
+    */
     self.remove_notification = function(nfc_idx){
         $.post(remove_notification_url, {
                 user_id: self.vue.current_user.id,
@@ -166,6 +202,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Returns false if the email belongs to a user that is part of the currently selected group.
+    */
     self.check_user = function(user_eml){
         if(self.vue.current_user.email == user_eml){
             return false;
@@ -180,6 +219,9 @@ var app = function() {
         return true;
     };
 
+    /*
+    * Makes the current user leave the currently selected group.
+    */
     self.leave_group = function(){
         $.post(leave_group_url, {
                 group_id: self.vue.groups[self.vue.group_idx].id,
@@ -195,6 +237,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Removes the currents groups surf session.
+    */
     self.remove_group_session = function(){
         $.post(edit_group_session_url,
             {

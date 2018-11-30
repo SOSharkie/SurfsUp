@@ -6,6 +6,9 @@ var app = function() {
 
     Vue.config.silent = false; // show all warnings
 
+    /*
+    * Gets all users in the system, and the current user if logged in.
+    */
     self.get_users = function () {
         $.getJSON(get_users_url, function (data) {
             self.vue.users = data.users;
@@ -14,21 +17,24 @@ var app = function() {
 
             if (self.vue.logged_in){
                 self.get_user_data(self.vue.current_user.id);
-                self.get_groups();
             }
             $("#vue-div").show();
         })
     };
 
+    /*
+    * Gets the user data for the currently logged in user.
+    */
     self.get_user_data = async function (user_id) {
         await $.get(user_data_url, {user_id: user_id}, function (data) {
             if (data == null){
-                console.log("");
+                self.add_user_data();
             } else {
                 console.log("got user data", data.user_data);
                 self.vue.user_data = data.user_data;
+                self.get_groups();
             }
-        })
+        });
         var county = getCounty();
         self.vue.countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
         self.vue.tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/" + county,
@@ -36,6 +42,25 @@ var app = function() {
         centerMap(self.vue.user_data.county);
     };
 
+    /*
+    * Creates the user data in the database if this is a new user.
+    */
+    self.add_user_data = function () {
+        $.post(add_user_data_url,
+            {
+                user_id: self.vue.current_user.id
+            }, 
+            function (data) {
+                console.log("added user_data", data.user_data);
+                self.vue.user_data = data.user_data;
+                self.get_groups();
+            }
+        );
+    };
+
+    /*
+    * Adds a surf session to the users sessions when the user clicks on a recommendation.
+    */
     self.confirm_surf_session = function(session_choice) {
         if (!self.vue.logged_in){
             return;
@@ -80,6 +105,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Adds a surf session to the selected group if the user clicks on a recommendation.
+    */
     self.confirm_group_session = function(session_choice){
         var spot;
         if (session_choice == 1){
@@ -109,6 +137,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Deletes a session from a users surf sessions.
+    */
     self.delete_surf_session = function(index) {
         console.log("delete session ", index);
         $.post(delete_surf_session_url, { 
@@ -121,7 +152,9 @@ var app = function() {
         );
     }
 
-    //creates 3 different recommendations for surf
+    /*
+    * Creates 3 different recommendations surf spots based on waves, tides, and user skill level
+    */
     self.surf = async function(recType){
         this.warnings = "";
         
@@ -237,11 +270,17 @@ var app = function() {
 
     };
 
+    /*
+    * Set the marker on the map when the user clicks on a surf session.
+    */
     self.view_surf_session = async function(message) {
         clearMarkers();
         setMarker(message, getCounty());
     }
 
+    /*
+    * Gets all the groups the current user is a part of.
+    */
     self.get_groups = function(){
         $.post(get_groups_url, {
                 group_owner: self.vue.current_user.email,
@@ -253,6 +292,9 @@ var app = function() {
         );
     };
 
+    /*
+    * Calculates the average skill level in the currently selected group.
+    */
     self.calculate_group_skill = function(){
         if (self.vue.selected_group == ''){
             self.vue.display_group_alert = true;
@@ -279,7 +321,10 @@ var app = function() {
         );
     };
 
-    self.check_session_date = function(session){
+    /*
+    * Returns true if the session date is in the past, false if the session date is in the future
+    */
+    self.session_date_past = function(session){
         var current_time = new Date();
         var session_date = session.substring(session.indexOf(',')+1, session.indexOf('W')-2);
         var month = parseInt(session_date.substring(1, session_date.indexOf('/')));
@@ -331,13 +376,14 @@ var app = function() {
             get_users: self.get_users,
             surf: self.surf,
             get_user_data: self.get_user_data,
+            add_user_data: self.add_user_data,
             confirm_surf_session: self.confirm_surf_session,
             confirm_group_session: self.confirm_group_session,
             delete_surf_session: self.delete_surf_session,
             view_surf_session: self.view_surf_session,
             get_groups: self.get_groups,
             calculate_group_skill: self.calculate_group_skill,
-            check_session_date: self.check_session_date,
+            session_date_past: self.session_date_past,
             toggle_to_group: function(choice){
                 self.vue.best_spot_message = "";
                 this.best_spot_1 = null;

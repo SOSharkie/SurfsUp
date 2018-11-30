@@ -10,6 +10,7 @@
     var get_groups_url = "{{=URL('groups_api', 'get_groups', user_signature=True)}}";
     var edit_group_session_url = "{{=URL('groups_api', 'edit_group_session', user_signature=True)}}";
     var calculate_group_skill_url = "{{=URL('groups_api', 'calculate_group_skill', user_signature=True)}}";
+    var add_user_data_url = "{{=URL('user_api', 'add_user_data', user_signature=True)}}";
 </script> 
 <link href="{{=URL('static','css/surf.css')}}" rel="stylesheet" type="text/css"/>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
@@ -36,7 +37,7 @@
           </section>
         </div>
 
-        <div class="rec_tab_container semi_transparent_box">
+        <div class="rec_tab_container semi_transparent_box" v-if="logged_in">
           <button class="rec_tab rec_tab_left" v-on:click="toggle_to_group(false)" 
           v-bind:class="{ selected_tab: !toggle_groups }">Personal</button>
           <button class="rec_tab rec_tab_right" v-on:click="toggle_to_group(true)"
@@ -171,13 +172,13 @@
       <div class="container padded third semi_transparent_box session_container">
         <div class="session_container padded">
           <h5 class="center">Your Surf Sessions</h5>
-          <div v-if="user_data.surf_sessions" class="silver padded tags tag_container">
+          <div v-if="user_data.surf_sessions" class="silver center padded tags tag_container">
             <h6 v-if="user_data.surf_sessions.length > 0" class="center session_label"> Past </h6>
-            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="check_session_date(session)"> ${session.substring(0, session.lastIndexOf(','))}
+            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="session_date_past(session)"> ${session.substring(0, session.lastIndexOf(','))}
               <i class="fa fa-trash session_delete" v-on:click.stop="delete_surf_session(index)"></i> 
             </span>
             <h6 v-if="user_data.surf_sessions.length > 0" class="center session_label"> Future </h6>
-            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="!check_session_date(session)"> ${session.substring(0, session.lastIndexOf(','))}
+            <span v-for="(session, index) in user_data.surf_sessions" class="tags session_span" v-on:click="view_surf_session(session)" v-if="!session_date_past(session)"> ${session.substring(0, session.lastIndexOf(','))}
                 <i class="fa fa-trash session_delete" v-on:click.stop="delete_surf_session(index)"></i> 
               </span>
           </div>
