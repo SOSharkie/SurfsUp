@@ -36,8 +36,8 @@ var app = function() {
             }
         });
         var county = getCounty();
-        self.vue.countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
-        self.vue.tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/" + county,
+        self.vue.county_response = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
+        self.vue.tide_response = await axios.get("http://api.spitcast.com/api/county/tide/" + county,
             {params: {dcat: "week"}});
         centerMap(self.vue.user_data.county);
     };
@@ -161,118 +161,118 @@ var app = function() {
     /*
     * Creates 3 different recommendations surf spots based on waves, tides, and user skill level
     */
-    self.surf = async function(recType){
+    self.surf = async function(rec_type){
         this.warnings = "";
         
-        if(recType == 0){
+        if(rec_type == 0){
             var skill_level = self.vue.user_data.skill_level;
             if(skill_level === undefined){
                 skill_level = "Expert";
                 this.warnings = "You are not logged in. Displaying expert recommendation.";
             }
         }
-        else if(recType == 1){
+        else if(rec_type == 1){
             var skill_level = self.vue.group_skill;
         }
 
         self.vue.calculating = true;
         
-        var startTime = self.start_hour;
-        var endTime = self.end_hour;
-        var spotIds = [];
-        var spotNames = [];
+        var start_time = self.start_hour;
+        var end_time = self.end_hour;
+        var spot_ids = [];
+        var spot_names = [];
 
         //gets spot ids and spot names for santa cruz
-        var countyResponse = self.vue.countyResponse;
-        var tideResponse = self.vue.tideResponse;
+        var county_response = self.vue.county_response;
+        var tide_response = self.vue.tide_response;
         //default to santa cruz if not logged in
-        if(countyResponse == null){
-            countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
-            tideResponse = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
+        if(county_response == null){
+            county_response = await axios.get("http://api.spitcast.com/api/county/spots/santa-cruz/");
+            tide_response = await axios.get("http://api.spitcast.com/api/county/tide/santa-cruz/",
                 {params: {dcat: "week"}});
         }
-        for(var i = 0; i < countyResponse.data.length; i++){
-            spotIds[i] = countyResponse.data[i].spot_id;
-            spotNames[i] = countyResponse.data[i].spot_name;
+        for(var i = 0; i < county_response.data.length; i++){
+            spot_ids[i] = county_response.data[i].spot_id;
+            spot_names[i] = county_response.data[i].spot_name;
         }
     
-        var bestTideTimes = findBestTideTimes(startTime, endTime, tideResponse, spotIds);
-        var allSpotsBestTime = [];       //array of every spots best time, same indexing as spot ids
-        var allSpotsSizeAtBestTime = []; //array of the size of the waves at the best time for each spot, same indexing as spot ids
-        var allSpotsTideHeights = [];    //array of the tide heights at these times
+        var best_tide_times = find_best_tide_times(start_time, end_time, tide_response, spot_ids);
+        var all_spots_best_time = [];       //array of every spots best time, same indexing as spot ids
+        var all_spots_size_at_best_time = []; //array of the size of the waves at the best time for each spot, same indexing as spot ids
+        var all_spots_tide_heights = [];    //array of the tide heights at these times
 
-        var maxNewSkillLevel = skill_level;
+        var max_new_skill_level = skill_level;
         //for each spot find best time during best tide times
-        for(var spotToCheck = 0; spotToCheck < spotIds.length; spotToCheck++){
-            var timeAndSize = await findBestTimeForSpot(bestTideTimes, skill_level, spotIds[spotToCheck]);
-            allSpotsBestTime.push(timeAndSize[0]);
-            allSpotsSizeAtBestTime.push(timeAndSize[1]);
-            allSpotsTideHeights.push(tideResponse.data[timeAndSize[0]].tide);
-            if(skillLevelAsInt(timeAndSize[3]) > skillLevelAsInt(maxNewSkillLevel) ){
-                maxNewSkillLevel = timeAndSize[3];
+        for(var spot_to_check = 0; spot_to_check < spot_ids.length; spot_to_check++){
+            var time_and_size = await find_best_time_for_spot(best_tide_times, skill_level, spot_ids[spot_to_check]);
+            all_spots_best_time.push(time_and_size[0]);
+            all_spots_size_at_best_time.push(time_and_size[1]);
+            all_spots_tide_heights.push(tide_response.data[time_and_size[0]].tide);
+            if(skill_level_as_int(time_and_size[3]) > skill_level_as_int(max_new_skill_level) ){
+                max_new_skill_level = time_and_size[3];
             }
             //check if no waves were found in skill level
-            if(timeAndSize[2] == true){
-                self.vue.warnings = "Caution: No waves were found in your skill level, the waves may be too large for you. Displaying waves for " + maxNewSkillLevel + " skill level.";
+            if(time_and_size[2] == true){
+                self.vue.warnings = "Caution: No waves were found in your skill level, the waves may be too large for you. Displaying waves for " + max_new_skill_level + " skill level.";
             }
         }
 
         //go through list of each spots best time and size and pick best 3 
-        var topThreeSpotNames = [];
-        var topThreeSpotSizes = [0,0,0];
-        var timesForBestSizes = [];
-        var tidesForBestSizes = [];
-        for(var spotToCheck = 0; spotToCheck < allSpotsBestTime.length; spotToCheck++){
-            if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[0]){
-                topThreeSpotSizes[2] = topThreeSpotSizes[1];
-                timesForBestSizes[2] = timesForBestSizes[1];
-                topThreeSpotNames[2] = topThreeSpotNames[1];
-                tidesForBestSizes[2] = tidesForBestSizes[1];
+        var top_three_spot_names = [];
+        var top_three_spot_sizes = [0,0,0];
+        var times_for_best_sizes = [];
+        var tides_for_best_sizes = [];
+        for(var spot_to_check = 0; spot_to_check < all_spots_best_time.length; spot_to_check++){
+            if(all_spots_size_at_best_time[spot_to_check] > top_three_spot_sizes[0]){
+                top_three_spot_sizes[2] = top_three_spot_sizes[1];
+                times_for_best_sizes[2] = times_for_best_sizes[1];
+                top_three_spot_names[2] = top_three_spot_names[1];
+                tides_for_best_sizes[2] = tides_for_best_sizes[1];
 
-                topThreeSpotSizes[1] = topThreeSpotSizes[0];
-                timesForBestSizes[1] = timesForBestSizes[0];
-                topThreeSpotNames[1] = topThreeSpotNames[0];
-                tidesForBestSizes[1] = tidesForBestSizes[0];
+                top_three_spot_sizes[1] = top_three_spot_sizes[0];
+                times_for_best_sizes[1] = times_for_best_sizes[0];
+                top_three_spot_names[1] = top_three_spot_names[0];
+                tides_for_best_sizes[1] = tides_for_best_sizes[0];
 
-                topThreeSpotSizes[0] = allSpotsSizeAtBestTime[spotToCheck];
-                timesForBestSizes[0] = allSpotsBestTime[spotToCheck];
-                topThreeSpotNames[0] = spotNames[spotToCheck]; 
-                tidesForBestSizes[0] = allSpotsTideHeights[spotToCheck];
+                top_three_spot_sizes[0] = all_spots_size_at_best_time[spot_to_check];
+                times_for_best_sizes[0] = all_spots_best_time[spot_to_check];
+                top_three_spot_names[0] = spot_names[spot_to_check]; 
+                tides_for_best_sizes[0] = all_spots_tide_heights[spot_to_check];
             }
-            else if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[1]){
-                topThreeSpotSizes[2] = topThreeSpotSizes[1];
-                timesForBestSizes[2] = timesForBestSizes[1];
-                topThreeSpotNames[2] = topThreeSpotNames[1];
-                tidesForBestSizes[2] = tidesForBestSizes[1];
+            else if(all_spots_size_at_best_time[spot_to_check] > top_three_spot_sizes[1]){
+                top_three_spot_sizes[2] = top_three_spot_sizes[1];
+                times_for_best_sizes[2] = times_for_best_sizes[1];
+                top_three_spot_names[2] = top_three_spot_names[1];
+                tides_for_best_sizes[2] = tides_for_best_sizes[1];
 
-                topThreeSpotSizes[1] = allSpotsSizeAtBestTime[spotToCheck];
-                timesForBestSizes[1] = allSpotsBestTime[spotToCheck];
-                topThreeSpotNames[1] = spotNames[spotToCheck]; 
-                tidesForBestSizes[1] = allSpotsTideHeights[spotToCheck];
+                top_three_spot_sizes[1] = all_spots_size_at_best_time[spot_to_check];
+                times_for_best_sizes[1] = all_spots_best_time[spot_to_check];
+                top_three_spot_names[1] = spot_names[spot_to_check]; 
+                tides_for_best_sizes[1] = all_spots_tide_heights[spot_to_check];
             }
-            else if(allSpotsSizeAtBestTime[spotToCheck] > topThreeSpotSizes[2]){
-                topThreeSpotSizes[2] = allSpotsSizeAtBestTime[spotToCheck];
-                timesForBestSizes[2] = allSpotsBestTime[spotToCheck];
-                topThreeSpotNames[2] = spotNames[spotToCheck]; 
-                tidesForBestSizes[2] = allSpotsTideHeights[spotToCheck];
+            else if(all_spots_size_at_best_time[spot_to_check] > top_three_spot_sizes[2]){
+                top_three_spot_sizes[2] = all_spots_size_at_best_time[spot_to_check];
+                times_for_best_sizes[2] = all_spots_best_time[spot_to_check];
+                top_three_spot_names[2] = spot_names[spot_to_check]; 
+                tides_for_best_sizes[2] = all_spots_tide_heights[spot_to_check];
             }
         }
         //clear all markers on the map before adding new recommended spots
         clearMarkers();
-        self.vue.best_spot_message = createSpotMessage(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0] );
-        self.vue.best_spot_message2 = createSpotMessage(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
-        self.vue.best_spot_message3 = createSpotMessage(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
+        self.vue.best_spot_message = create_spot_message(top_three_spot_names[0], times_for_best_sizes[0], top_three_spot_sizes[0], tides_for_best_sizes[0] );
+        self.vue.best_spot_message2 = create_spot_message(top_three_spot_names[1], times_for_best_sizes[1], top_three_spot_sizes[1], tides_for_best_sizes[1]);
+        self.vue.best_spot_message3 = create_spot_message(top_three_spot_names[2], times_for_best_sizes[2], top_three_spot_sizes[2], tides_for_best_sizes[2]);
 
-        self.vue.best_spot_1 = createSpotObject(topThreeSpotNames[0], timesForBestSizes[0], topThreeSpotSizes[0], tidesForBestSizes[0]);
-        self.vue.best_spot_2 = createSpotObject(topThreeSpotNames[1], timesForBestSizes[1], topThreeSpotSizes[1], tidesForBestSizes[1]);
-        self.vue.best_spot_3 = createSpotObject(topThreeSpotNames[2], timesForBestSizes[2], topThreeSpotSizes[2], tidesForBestSizes[2]);
+        self.vue.best_spot_1 = create_spot_object(top_three_spot_names[0], times_for_best_sizes[0], top_three_spot_sizes[0], tides_for_best_sizes[0]);
+        self.vue.best_spot_2 = create_spot_object(top_three_spot_names[1], times_for_best_sizes[1], top_three_spot_sizes[1], tides_for_best_sizes[1]);
+        self.vue.best_spot_3 = create_spot_object(top_three_spot_names[2], times_for_best_sizes[2], top_three_spot_sizes[2], tides_for_best_sizes[2]);
         self.vue.calculating = false;
         
         var county = getCounty();
         //add markers to each spot
-        setMarker(self.vue.best_spot_message, county, timesForBestSizes[0]);
-        setMarker(self.vue.best_spot_message2, county, timesForBestSizes[1]);
-        setMarker(self.vue.best_spot_message3, county, timesForBestSizes[2]);
+        setMarker(self.vue.best_spot_message, county, times_for_best_sizes[0]);
+        setMarker(self.vue.best_spot_message2, county, times_for_best_sizes[1]);
+        setMarker(self.vue.best_spot_message3, county, times_for_best_sizes[2]);
 
     };
 
@@ -360,8 +360,8 @@ var app = function() {
             best_spot_message: "",
             best_spot_message2: "",
             best_spot_message3: "",
-            tideResponse: null,
-            countyResponse: null,
+            tide_response: null,
+            county_response: null,
             warnings: "",
             best_spot_1: null,
             best_spot_2: null,
@@ -440,48 +440,48 @@ function clearMarkers(){
 async function setMarker(surfSpotMessage, county, time){
     //parses best spot message to get data to be displayed when a marker is clicked
     //[0]-spot name, [1]-timeMsg, [2]-wave_ft, [3]-tide_ft
-    var parsedMessage = surfSpotMessage.split(","); 
-    var countyResponse = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
-    var bestSpotCoords = []; 
+    var parsed_message = surfSpotMessage.split(","); 
+    var county_response = await axios.get("http://api.spitcast.com/api/county/spots/" + county);
+    var best_spot_coords = []; 
     var spot_id;
     //this loop is only to get the coords of the spots
-    for(var i = 0; i < countyResponse.data.length && bestSpotCoords.length != 2; i++){
-        spotName = countyResponse.data[i].spot_name;
-        if(spotName == parsedMessage[0]){
-            bestSpotCoords.push(countyResponse.data[i].latitude);
-            bestSpotCoords.push(countyResponse.data[i].longitude);
-            spot_id = countyResponse.data[i].spot_id;
+    for(var i = 0; i < county_response.data.length && best_spot_coords.length != 2; i++){
+        spot_name = county_response.data[i].spot_name;
+        if(spot_name == parsed_message[0]){
+            best_spot_coords.push(county_response.data[i].latitude);
+            best_spot_coords.push(county_response.data[i].longitude);
+            spot_id = county_response.data[i].spot_id;
         }
     }
     //spot forecast at the recomended time
-    const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spot_id + "/",
+    const spot_response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spot_id + "/",
         { params: {dcat:"week"}});
-    var spotForecast = spotResponse.data[time];
-    spotName = parsedMessage[0];
+    var spot_forecast = spot_response.data[time];
+    spot_name = parsed_message[0];
     //Contains info to be displayed when marker is clicked
     var infowindow;
     if(time == null){
         infowindow = new google.maps.InfoWindow({
-            content:'<div><b>'+ spotName + '</b></div>' + 
-            '<div>' + parsedMessage[1] + '</div>' + 
-            '<div>' + parsedMessage[2] + '</div>' + 
-            '<div>' + parsedMessage[3] + '</div>',
+            content:'<div><b>'+ spot_name + '</b></div>' + 
+            '<div>' + parsed_message[1] + '</div>' + 
+            '<div>' + parsed_message[2] + '</div>' + 
+            '<div>' + parsed_message[3] + '</div>',
         });
     }
     else {
         infowindow = new google.maps.InfoWindow({
-            content:'<div><b>'+ spotName + '</b></div>' + 
-            '<div>' + parsedMessage[1] + '</div>' + 
-            '<div>' + "Swell: " + spotForecast.shape_detail.swell + '</div>' + 
-            '<div>' + "Tide: " + spotForecast.shape_detail.tide + '</div>' +
-            '<div>' + "Wind: " + spotForecast.shape_detail.wind + '</div>',
+            content:'<div><b>'+ spot_name + '</b></div>' + 
+            '<div>' + parsed_message[1] + '</div>' + 
+            '<div>' + "Swell: " + spot_forecast.shape_detail.swell + '</div>' + 
+            '<div>' + "Tide: " + spot_forecast.shape_detail.tide + '</div>' +
+            '<div>' + "Wind: " + spot_forecast.shape_detail.wind + '</div>',
         });
     }
     var marker = new google.maps.Marker({ 
-        position: {lat: bestSpotCoords[0], lng: bestSpotCoords[1]}, 
+        position: {lat: best_spot_coords[0], lng: best_spot_coords[1]}, 
         map: map,
         animation: google.maps.Animation.DROP,
-        title: spotName
+        title: spot_name
     });
     APP.vue.markers.push(marker);
     marker.addListener('click', function() {
@@ -562,96 +562,99 @@ function centerMap(county){
 
 //takes list of spot IDs, and a time 
 //returns average wave size in the county at that time
-async function calculateAverageSizeInCounty(spotIds, time){
-    var avgSizeInCounty = 0;
-    for(var spotIdToCheck = 0; spotIdToCheck < spotIds.length; spotIdToCheck++){
-        thisId = spotIds[spotIdToCheck];
-        const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + thisId + "/",
+async function calculate_average_size_in_county(spot_ids, time){
+    var avg_size_in_county = 0;
+    for(var spot_id_to_check = 0; spot_id_to_check < spot_ids.length; spot_id_to_check++){
+        thisId = spot_ids[spot_id_to_check];
+        const spot_response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + thisId + "/",
             { params: {dcat:"week"}});
-        var currentStatsAtSpot = spotResponse.data[time];
-        avgSizeInCounty += currentStatsAtSpot.size_ft;
+        var current_stats_at_spot = spot_response.data[time];
+        avg_size_in_county += current_stats_at_spot.size_ft;
     }
-    avgSizeInCounty = avgSizeInCounty/spotIds.length;
-    return avgSizeInCounty;
+    avg_size_in_county = avg_size_in_county/spot_ids.length;
+    return avg_size_in_county;
 }
 
 //takes avg wave size in county, start and end time inputted by user, and the api response for tide
 //returns the list of the most appropriate tide times based on current wave sizes
-function findBestTideTimes(startTime, endTime, tideResponse, spotIds){
-    var bestTideTimes = [];
+function find_best_tide_times(start_time, end_time, tide_response, spot_ids){
+    var best_tide_times = [];
 
-    for(var timeToCheck = startTime; timeToCheck <= endTime; timeToCheck++){
-        var currentAvgSize = calculateAverageSizeInCounty(spotIds, timeToCheck);
-        var minAndMaxTides = calculateMinMaxAcceptableTide(currentAvgSize);
-        var minAcceptableTide = minAndMaxTides[0]; var maxAcceptableTide = minAndMaxTides[1];
-        var tideAtTime = tideResponse.data[timeToCheck].tide;
-        if(tideAtTime > minAcceptableTide && tideAtTime < maxAcceptableTide){
-            bestTideTimes.push(timeToCheck);
+    for(var time_to_check = start_time; time_to_check <= end_time; time_to_check++){
+        var current_avg_size = calculate_average_size_in_county(spot_ids, time_to_check);
+        var min_max_tides = calculate_min_max_tide_heights(current_avg_size);
+        var min_acceptable_tide = min_max_tides[0]; 
+        var max_acceptable_tide = min_max_tides[1];
+        var tide_at_time = tide_response.data[time_to_check].tide;
+        if(tide_at_time > min_acceptable_tide && tide_at_time < max_acceptable_tide){
+            best_tide_times.push(time_to_check);
         }
     }
-    if (bestTideTimes.length == 0){
-        bestTideTimes.push(startTime);
-        bestTideTimes.push(endTime);
+    if (best_tide_times.length == 0){
+        best_tide_times.push(start_time);
+        best_tide_times.push(end_time);
     }
-    return bestTideTimes;
+    return best_tide_times;
 }
 
-function calculateMinMaxAcceptableTide(avgSize){
-    var minAcceptableTide; var maxAcceptableTide;
+function calculate_min_max_tide_heights(avgSize){
+    var min_acceptable_tide; 
+    var max_acceptable_tide;
     if(avgSize < 2.5){      // lower tides are better for smaller waves
-        minAcceptableTide = -5; // will never be this low, take as low as possible
-        maxAcceptableTide = 3;
+        min_acceptable_tide = -5; // will never be this low, take as low as possible
+        max_acceptable_tide = 3;
     }
     else if(avgSize > 5){   // tide matters less when waves are bigger
-        minAcceptableTide = 0;
-        maxAcceptableTide = 4;
+        min_acceptable_tide = 0;
+        max_acceptable_tide = 4;
     }
     else{                   // tide for everything else
-        minAcceptableTide = 0;
-        maxAcceptableTide = 3.5;
+        min_acceptable_tide = 0;
+        max_acceptable_tide = 3.5;
     }
-    return [minAcceptableTide, maxAcceptableTide];
+    return [min_acceptable_tide, max_acceptable_tide];
 }
 
 //takes list of times where tide is good, user skill level, ID of spot to check, avg wave size
 //returns the time with the best waves for the specific spot, and the actual size of the waves at that time
-async function findBestTimeForSpot(bestTideTimes, skill_level, spotId){
-    var minAndMaxHeights = calculateMinMaxHeights(skill_level); // 0 is min 1 is max
-    var minHeight = minAndMaxHeights[0]; var maxHeight = minAndMaxHeights[1];
-    var bestSizeForSpot = 0;
-    var timeWithBestSize = 0;
-    var skillChanged = false;
+async function find_best_time_for_spot(best_tide_times, skill_level, spotId){
+    var min_and_max_heights = calculate_min_max_wave_heights(skill_level); // 0 is min 1 is max
+    var min_height = min_and_max_heights[0]; 
+    var max_height = min_and_max_heights[1];
+    var best_size_for_spot = 0;
+    var time_with_best_size = 0;
+    var skill_changed = false;
     var next_skill_level = skill_level;
     var highest_skill_level = skill_level;
 
-    const spotResponse = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spotId + "/",
+    const spot_response = await axios.get("http://api.spitcast.com/api/spot/forecast/" + spotId + "/",
         { params: {dcat:"week"}});
 
-    for(var timeToCheck = 0; timeToCheck < bestTideTimes.length; timeToCheck++){
-        var currentStatsAtSpot = spotResponse.data[bestTideTimes[timeToCheck]];
-        var sizeAtTime = currentStatsAtSpot.size_ft;
-        if(sizeAtTime < maxHeight && sizeAtTime > minHeight){
-            if(sizeAtTime > bestSizeForSpot){
-                bestSizeForSpot = sizeAtTime;
-                timeWithBestSize = bestTideTimes[timeToCheck];
+    for(var time_to_check = 0; time_to_check < best_tide_times.length; time_to_check++){
+        var current_stats_at_spot = spot_response.data[best_tide_times[time_to_check]];
+        var size_at_time = current_stats_at_spot.size_ft;
+        if(size_at_time < max_height && size_at_time > min_height){
+            if(size_at_time > best_size_for_spot){
+                best_size_for_spot = size_at_time;
+                time_with_best_size = best_tide_times[time_to_check];
             }
         }
     }
-    if(timeWithBestSize == 0 || bestSizeForSpot == 0){
-        next_skill_level = calculateNextSkill(skill_level);
+    if(time_with_best_size == 0 || best_size_for_spot == 0){
+        next_skill_level = calculate_next_skill(skill_level);
         highest_skill_level = next_skill_level;
-        var timeAndSize = await findBestTimeForSpot(bestTideTimes, next_skill_level, spotId);
-        timeWithBestSize = timeAndSize[0];
-        bestSizeForSpot = timeAndSize[1];
-        highest_skill_level = timeAndSize[3];
-        skillChanged = true;
+        var time_and_size = await find_best_time_for_spot(best_tide_times, next_skill_level, spotId);
+        time_with_best_size = time_and_size[0];
+        best_size_for_spot = time_and_size[1];
+        highest_skill_level = time_and_size[3];
+        skill_changed = true;
     }
-    return [timeWithBestSize, bestSizeForSpot, skillChanged, highest_skill_level];
+    return [time_with_best_size, best_size_for_spot, skill_changed, highest_skill_level];
 }
 
 //takes skill level
 //returns next higherup skill level
-function calculateNextSkill(skill_level){
+function calculate_next_skill(skill_level){
     var new_skill;
     if(skill_level == "Beginner"){
         new_skill = "Intermediate";
@@ -665,7 +668,7 @@ function calculateNextSkill(skill_level){
     return new_skill;
 }
  
-function skillLevelAsInt(skill_level){
+function skill_level_as_int(skill_level){
     if(skill_level == 'Beginner'){
         return 1;
     }
@@ -682,55 +685,56 @@ function skillLevelAsInt(skill_level){
 
 //takes average wave size and user skill level
 //returns min and max heights the waves should be based on skill level and wave size
-function calculateMinMaxHeights(skill_level){
-    var minHeight; var maxHeight;
+function calculate_min_max_wave_heights(skill_level){
+    var min_height; 
+    var max_height;
     if(skill_level == 'Beginner'){
-        minHeight = 0; // no minimum 
-        maxHeight = 2.5;
+        min_height = 0; // no minimum 
+        max_height = 2.5;
     }
     else if(skill_level == 'Intermediate'){
-        minHeight = 0;
-        maxHeight = 3.5;
+        min_height = 0;
+        max_height = 3.5;
     }
     else if(skill_level == 'Advanced'){
-        minHeight = 0;
-        maxHeight = 6;
+        min_height = 0;
+        max_height = 6;
     }
     else if(skill_level == 'Expert'){
-        minHeight = 0;
-        maxHeight = 50; // no maximum
+        min_height = 0;
+        max_height = 50; // no maximum
     }
-    return [minHeight, maxHeight];
+    return [min_height, max_height];
 }
 
-function createSpotMessage(spotName, time, waveSize, tideHeight){
-    var ampm = "AM";
-    var todayTmrw = "Today";
-    var todayDate = new Date();
-    var date_day = todayDate.getDate();
-    var date_month = todayDate.getMonth() + 1;
+function create_spot_message(spot_name, time, wave_size, tide_height){
+    var am_pm = "AM";
+    var today_tomorrow = "Today";
+    var today_date = new Date();
+    var date_day = today_date.getDate();
+    var date_month = today_date.getMonth() + 1;
     if(time >= 12){
         if(time < 24){
-            ampm = "PM";
+            am_pm = "PM";
             time -= 12;
         }
         else if(time < 36){
             time -=24;
-            todayTmrw = "Tomorrow";
+            today_tomorrow = "Tomorrow";
         }
         else{
-            ampm = "PM";
-            todayTmrw = "Tomorrow";
+            am_pm = "PM";
+            today_tomorrow = "Tomorrow";
             time -= 36;
         }
         if(time == 0){
             time = 12;
         }
         if(time == 12){
-            ampm = "PM";
+            am_pm = "PM";
         }
     }
-    if(todayTmrw == "Tomorrow"){
+    if(today_tomorrow == "Tomorrow"){
         date_day++;
         if(date_month % 2 == 0){
             if(date_day > 31){
@@ -755,57 +759,57 @@ function createSpotMessage(spotName, time, waveSize, tideHeight){
         }
     }
     var date_day_and_month = date_month + "/" + date_day;
-    var message = spotName + ", " + date_day_and_month + " @ " + time + ampm + ", Waves: " + Math.round(waveSize * 100)/100
-        + " ft," + " Tide: " + Math.round(tideHeight * 100)/100 + " ft ";
+    var message = spot_name + ", " + date_day_and_month + " @ " + time + am_pm + ", Waves: " + Math.round(wave_size * 100)/100
+        + " ft," + " Tide: " + Math.round(tide_height * 100)/100 + " ft ";
     return message;
 }
 
-function createSpotObject(spotName, time, waveSize, tideHeight){
-    var ampm = "AM";
-    var todayTmrw = "Today";
+function create_spot_object(spot_name, time, wave_size, tide_height){
+    var am_pm = "AM";
+    var today_tomorrow = "Today";
     if(time >= 12){
         if(time < 24){
-            ampm = "PM";
+            am_pm = "PM";
             time -= 12;
         }
         else if(time < 36){
             time -=24;
-            todayTmrw = "Tomorrow";
+            today_tomorrow = "Tomorrow";
         }
         else{
-            ampm = "PM";
-            todayTmrw = "Tomorrow";
+            am_pm = "PM";
+            today_tomorrow = "Tomorrow";
             time -= 36;
         }
         if(time == 0){
             time = 12;
         }
         if(time == 12){
-            ampm = "PM";
+            am_pm = "PM";
         }
     }
-    var timeString = todayTmrw + " @ " + time + ampm;
-    var waveString = Math.round(waveSize * 100)/100+ " ft";
-    var tideString = Math.round(tideHeight * 100)/100 + " ft ";
+    var time_string = today_tomorrow + " @ " + time + am_pm;
+    var wave_string = Math.round(wave_size * 100)/100+ " ft";
+    var tide_string = Math.round(tide_height * 100)/100 + " ft ";
 
     var spotObj = {
         style: {
-            backgroundImage: getSpotPictureUrl(spotName)
+            backgroundImage: getSpotPictureUrl(spot_name)
         },
-        spot: spotName,
-        wave_height: waveString,
-        tide: tideString,
-        time: timeString,
+        spot: spot_name,
+        wave_height: wave_string,
+        tide: tide_string,
+        time: time_string,
         clicked_spot: false
     };
     return spotObj;
 }
 
-function getSpotPictureUrl(spotName){
+function getSpotPictureUrl(spot_name){
     spotPics = ['naturalbridges', 'waddellreefs', 'steamerlane', 'davenportlanding', 'manresa', 'santamarias',
     'pleasurepoint', 'cowells', '26thavenue', '38thavenue', 'getchell', 'blacks', 'threemile', 'fourmile',
     'oceanbeach', 'mavericks', , 'uppertrestles', 'huntingtonbeach', 'bolsachica', 'scottscreek'];
-    var spot = spotName.replace(/\s+/g, '').toLowerCase();
+    var spot = spot_name.replace(/\s+/g, '').toLowerCase();
     if (spot.includes('oceanbeach')){
         spot = 'oceanbeach';
     }
